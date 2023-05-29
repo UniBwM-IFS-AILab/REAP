@@ -1,0 +1,33 @@
+{
+    "SettingsVersion": 1.2,
+    "SimMode": "Multirotor",
+    "OriginGeopoint": {
+	"Latitude": 48.027342,
+	"Longitude": 11.874431,
+	"Altitude": 1
+    },
+    "Vehicles": {
+        "Drone1": {
+            "VehicleType": "PX4Multirotor",
+            "UseSerial": false,
+            "UseTcp": true,
+            "TcpPort": 4560,
+	    "ControlIp": "remote",
+	    "LocalHostIp": "172.17.208.1",
+            "ControlPortLocal": 14540,
+            "ControlPortRemote": 14580,
+            "X": 0, "Y": 1, "Z": 0
+        },
+        "Drone2": {
+            "VehicleType": "PX4Multirotor",
+            "UseSerial": false,
+            "UseTcp": true,
+            "TcpPort": 4561,
+	    "ControlIp": "remote",
+	    "LocalHostIp": "172.17.208.1",
+            "ControlPortLocal": 14541,
+            "ControlPortRemote": 14581,       
+            "X": 0, "Y": -1, "Z": 0
+        }
+    }
+}
