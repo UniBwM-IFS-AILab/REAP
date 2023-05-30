@@ -33,7 +33,8 @@ A video is also available on youtube to provide an overview of the REAP-framewor
 
 This repository contains installation information for the REAP framework as described in (hopefully link to publication here).
 
-You can quickly set up the framework with a provided tarball as descibed in [Installation with Tarball](#installation-with-tarball). For full installation details see the [Manual Installation (without Tarball)](#manual-installation-without-tarball).
+You can quickly set up the framework with a provided tarball as descibed in [Installation with Tarball](#installation-with-tarball). For full installation details see the [Manual Installation (without Tarball)](#manual-installation-without-tarball). You can find information on how to customize the framework to your needs under [Editing the Simulation Environment](#editing-the-simulation-environment).
+
 Below you can find an overview of the system architecture. The provided tarball contains all modules, except the "Simulator" module and the AirSim API from the "Environment Manipulation" module. QGroundControl and the Unreal Remote Control API can run either under Windows or the WSL instance if the IP settings are adjusted accordingly.
 ![image](https://user-images.githubusercontent.com/92592126/235682354-15a2d7e3-4c66-4561-81dd-e6cae6041ecc.png)
 
