@@ -2,6 +2,8 @@
 
 ![image](https://user-images.githubusercontent.com/92592126/235185659-75937f07-1976-4b61-9ffa-43ad95e4c472.png)
 
+
+This repository contains installation information for the REAP framework as described in (link to publication here). A video is also available on youtube to provide an overview of the REAP-framework: https://www.youtube.com/watch?v=QtMjnMD5zzE
 To cite **REAP**, please use the following reference: <br />
 Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs". In: ICAPS 2023 System Demonstrations.<br />
 ```
@@ -13,7 +15,7 @@ Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulatio
     month = jul
 }
 ```
-A video is also available on youtube to provide an overview of the REAP-framework: https://www.youtube.com/watch?v=QtMjnMD5zzE
+
 
 
   * [System Requirements](#system-requirements)
@@ -30,8 +32,6 @@ A video is also available on youtube to provide an overview of the REAP-framewor
     + [Setup of the Environment Manipulation](#setup-of-the-environment-manipulation)
   * [Editing the Simulation Environment](#editing-the-simulation-environment)
   * [Contact Information](#contact-information)
-
-This repository contains installation information for the REAP framework as described in (hopefully link to publication here).
 
 You can quickly set up the framework with a provided tarball as descibed in [Installation with Tarball](#installation-with-tarball). For full installation details see the [Manual Installation (without Tarball)](#manual-installation-without-tarball). You can find information on how to customize the framework to your needs under [Editing the Simulation Environment](#editing-the-simulation-environment).
 
