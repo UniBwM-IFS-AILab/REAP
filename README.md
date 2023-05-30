@@ -3,6 +3,7 @@
 ![image](https://user-images.githubusercontent.com/92592126/235185659-75937f07-1976-4b61-9ffa-43ad95e4c472.png)
 
 To cite **REAP**, please use the following reference: <br />
+Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs". In: ICAPS 2023 System Demonstrations.<br />
 ```
 @conference{reap2023icaps,
     title = "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs",
@@ -12,7 +13,6 @@ To cite **REAP**, please use the following reference: <br />
     month = jul
 }
 ```
-Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs". In: ICAPS 2023 System Demonstrations.<br />
 A video is also available on youtube to provide an overview of the REAP-framework: https://www.youtube.com/watch?v=QtMjnMD5zzE
 
 
@@ -160,7 +160,7 @@ The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https:/
     send:    true
 ```
 
-Afterwards you have to make a clean rebuild of PX4-Autopilot and the px4_ros_com package.
+Afterwards you have to make a clean rebuild of PX4-Autopilot and the px4_ros_com package. You might also want to add the line `source ~/px4_ros_com_ros2/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the _px4_ros_com_ros2_ workspace every time you start a new terminal tab within the WSL2 instance.
 
 >**⚠ Info** If you already enabled the message types but they still aren't listed as topics after starting the micrortps_agent, the following links might help:
 >- https://github.com/PX4/px4_ros_com/issues/124
@@ -181,10 +181,24 @@ Next, copy the following files from within the `Offboard_Control` folder of this
 - replace the original `offboard_control.cpp` with the one from this repo.
 
 Finally replace the file `CMakeLists.txt` in the directory `~\px4_ros_com_ros2\src\px4_ros_com` with the modified version of this repo as well.
+Rebuild the micrortps_agent and the offboard_control(**Action Server**) via the command `cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
+
+Now, if the AI-planning subsystem has also been setup, you should be able to run the whole framework by executing the following lines (in separate tabs) after starting the Unreal Simulation. If you are using our provided `aliases.sh` you can also just execute the shellscript `start_upf_simulation.sh` from this repo instead.
+```
+cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris
+
+micrortps_agent -t UDP
+
+cd ~/px4_ros_com_ros2; ros2 run px4_ros_com offboard_control
+
+cd ~/PlanSys; source install/local_setup.bash; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py
+
+cd ~/PlanSys; source install/local_setup.bash; source install/setup.bash; ros2 launch upf4ros2_demo traverse_areas.launch.py
+```
 
 ### Setup of the Ground Control Software
 
-Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal 4 Simulation and PX4 are already running, it should automatically connect.
+Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal Simulation and PX4 are already running, it should automatically connect.
 
 ### Setup of the Environment Manipulation
 You can externally control the simulation environment (i.e. spawn new objects, change weather conditions, etc.) using the **Remote Control API** for the Unreal Engine and the **AirSim API**.
