@@ -194,9 +194,9 @@ micrortps_agent -t UDP
 
 cd ~/px4_ros_com_ros2; ros2 run px4_ros_com offboard_control
 
-cd ~/PlanSys; source install/local_setup.bash; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py
+cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py
 
-cd ~/PlanSys; source install/local_setup.bash; source install/setup.bash; ros2 launch upf4ros2_demo traverse_areas.launch.py
+cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2_demo traverse_areas.launch.py
 ```
 
 ### Setup of the Ground Control Software
