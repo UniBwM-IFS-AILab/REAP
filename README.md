@@ -3,6 +3,15 @@
 ![image](https://user-images.githubusercontent.com/92592126/235185659-75937f07-1976-4b61-9ffa-43ad95e4c472.png)
 
 To cite **REAP**, please use the following reference: <br />
+```
+@conference{reap2023icaps,
+    title = "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs",
+    author = "Kraus, Oliver and Mair, Lucas and Kiam, {Jane Jean}",
+    booktitle = {ICAPS 2023 System Demonstrations},
+    year = "2023",
+    month = jul
+}
+```
 Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs". In: ICAPS 2023 System Demonstrations.<br />
 A video is also available on youtube to provide an overview of the REAP-framework: https://www.youtube.com/watch?v=QtMjnMD5zzE
 
@@ -52,7 +61,7 @@ Sample data can be downloaded from here (choose LAS): https://www.ldbv.bayern.de
 Make sure the `"OriginGeopoint"` field of settings.json corresponds to the real GPS coordinates of the `Player Start` Object within the imported LIDAR environment and rotate the point cloud in such a way that north aligns with the x-Axis within Unreal Engine. Google Maps can be helpful in making sure the GPS coordinates of the simulated Environment correspond to the real world.
 
 ### Import WSL2 Tarball
-Note: Due to the size of the tarball, please write to us if you intend to download and install using the WSL2 Tarball. We will then send you a temporary link for direct download. 
+> **⚠ Info** Due to the size of the tarball, please write to us if you intend to download and install using the WSL2 Tarball. We will then send you a temporary link for direct download.
 
 Download the tarball. This tarball contains a WSL2 instance with all required modules installed.
 Install the downloaded tarball with:
@@ -63,7 +72,7 @@ For more information see: https://learn.microsoft.com/en-us/windows/wsl/use-cust
 
 **_NOTE:_**  The password for the imported WSL2 is: "dronesim".
 
-The preconfigured WSL instance from the tarball makes use of aliases that can be edited via the custom linux alias `edit_alias` and after changing them updated via `reload_alias`.
+The preconfigured WSL2 instance from the tarball makes use of aliases that can be edited via the custom linux alias `edit_alias` and after changing them updated via `reload_alias`.
 
 
 ### Allow Incoming Connections in Windows
@@ -142,7 +151,7 @@ cd ~/px4_ros_com_ros2; ros2 run px4_ros_com offboard_control
 * * *
 
 #### Setting up the Action Server
-The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https://docs.px4.io/v1.13/en/ros/ros2_offboard_control.html) in the official PX4 documentation. If you want to make use of GPS-based drone waypoints and read out the state of battery charge, you first have to enable relevant messages by editing the file `urtps_bridge_topics.yaml` both in the PX4-Autopilot and the *px4_ros_com* package. It works as described in the "Requirements" section of the ROS 2 Offboard Control Example, but with the additional message types `battery_status` and `vehicle_global_position`. Just append the following lines at the end of the `urtps_bridge_topics.yaml` files:
+The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https://docs.px4.io/v1.13/en/ros/ros2_offboard_control.html) in the official PX4 documentation. If you want to make use of GPS-based drone waypoints and read out the state of battery charge, you first have to enable relevant message types by editing the file `urtps_bridge_topics.yaml` both in the PX4-Autopilot and the *px4_ros_com* package. It works as described in the "Requirements" section of the ROS 2 Offboard Control Example, but with the additional message types `battery_status` and `vehicle_global_position`. Just append the following lines at the end of the `urtps_bridge_topics.yaml` files:
 
 ```
   - msg:     battery_status
@@ -153,7 +162,7 @@ The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https:/
 
 Afterwards you have to make a clean rebuild of PX4-Autopilot and the px4_ros_com package.
 
->**⚠ Info** If you already enabled the messages but they still aren't listed as topics in the micrortps_agent, the following links might help:
+>**⚠ Info** If you already enabled the message types but they still aren't listed as topics after starting the micrortps_agent, the following links might help:
 >- https://github.com/PX4/px4_ros_com/issues/124
 >- https://github.com/PX4/PX4-Autopilot/issues/19917#issuecomment-1201515126
 >
@@ -164,10 +173,18 @@ Afterwards you have to make a clean rebuild of PX4-Autopilot and the px4_ros_com
 >
 >``` cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source clean_all.bash ```
 
+At this point the additional topic types `BatteryStatus publisher` and `VehicleGlobalPosition publisher` should show up after starting the micrortps_agent(which corresponds to the "ROS2 Bridge" module in the system diagram).
+Next, copy the following files from within the `Offboard_Control` folder of this repo to `~\px4_ros_com_ros2\src\px4_ros_com\src\examples\offboard`:
+- `battery_status_listener_lib.cpp`
+- `vehicle_global_position_listener_lib.cpp`
+- `GeodeticConverter.hpp`
+- replace the original `offboard_control.cpp` with the one from this repo.
+
+Finally replace the file `CMakeLists.txt` in the directory `~\px4_ros_com_ros2\src\px4_ros_com` with the modified version of this repo as well.
 
 ### Setup of the Ground Control Software
 
-Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. When you start the px4, QGroundControl should automatically connect to it.
+Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal 4 Simulation and PX4 are already running, it should automatically connect.
 
 ### Setup of the Environment Manipulation
 You can externally control the simulation environment (i.e. spawn new objects, change weather conditions, etc.) using the **Remote Control API** for the Unreal Engine and the **AirSim API**.
