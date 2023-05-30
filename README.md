@@ -4,7 +4,7 @@
 
 
 This repository contains installation information for the REAP framework as described in (link to publication here).<br />
-A demo video is available to provide an overview of the framework: https://www.youtube.com/watch?v=QtMjnMD5zzE.
+A demo video provides an overview of the framework: https://www.youtube.com/watch?v=QtMjnMD5zzE.
 
 To cite **REAP**, please use the following reference: <br />
 Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs". In: ICAPS 2023 System Demonstrations.<br />
