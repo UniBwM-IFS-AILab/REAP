@@ -34,11 +34,12 @@
  * @brief Vehicle global position uORB topic listener example
  * @file vehicle_global_position_listener_lib.cpp
  * @addtogroup lib
- * @author Nuno Marques <nuno.marques@dronesolutions.io>
+ * @author Lucas Mair <lucas.mair@unibw.de>
  */
 
 #include <rclcpp/rclcpp.hpp>
 #include <px4_msgs/msg/vehicle_global_position.hpp>
+#include <px4_msgs/msg/vehicle_odometry.hpp>
 
 /**
  * @brief Vehicle global position uORB topic data callback
@@ -47,14 +48,17 @@ class VehicleGlobalPositionListener : public rclcpp::Node
 {
 public:
 
-	px4_msgs::msg::VehicleGlobalPosition::SharedPtr recent_msg;
+	px4_msgs::msg::VehicleGlobalPosition::SharedPtr recent_gps_msg;
+	px4_msgs::msg::VehicleOdometry::SharedPtr recent_ned_msg;
 	
 	explicit VehicleGlobalPositionListener() : Node("vehicle_global_position_listener") {
 		
-		px4_msgs::msg::VehicleGlobalPosition empty_msg{};
-		recent_msg = std::make_shared<px4_msgs::msg::VehicleGlobalPosition>(std::move(empty_msg));
+		px4_msgs::msg::VehicleGlobalPosition empty_gps_msg{};
+		recent_gps_msg = std::make_shared<px4_msgs::msg::VehicleGlobalPosition>(std::move(empty_gps_msg));
+		px4_msgs::msg::VehicleOdometry empty_ned_msg{};
+		recent_ned_msg = std::make_shared<px4_msgs::msg::VehicleOdometry>(std::move(empty_ned_msg));
 		
-		subscription_ = this->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(
+		subscription_gps = this->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(
 			"fmu/vehicle_global_position/out",
 #ifdef ROS_DEFAULT_API
             10,
@@ -74,14 +78,36 @@ public:
 			std::cout << "terrain_alt: " << msg->terrain_alt << std::endl;
 			*/
 			
-			recent_msg = std::make_unique<px4_msgs::msg::VehicleGlobalPosition>(*msg);
+			recent_gps_msg = std::make_unique<px4_msgs::msg::VehicleGlobalPosition>(*msg);
 			//std::cout << "recent_msg timestamp (should be same as above): " << recent_msg->timestamp << std::endl;
+		});
+		
+		std::cout << "Setup local position subscriber (odometry)..." << std::endl;
+		subscription_ned = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
+			"fmu/vehicle_odometry/out",
+#ifdef ROS_DEFAULT_API
+            10,
+#endif
+			[this](const px4_msgs::msg::VehicleOdometry::UniquePtr msg) {
+			/*
+			std::cout << "\n\n\n\n\n\n\n\n\n\n";
+			std::cout << "RECEIVED VEHICLE LOCAL POSITION DATA"   << std::endl;
+			std::cout << "=================================="   << std::endl;
+			std::cout << "ts: "      << msg->timestamp    << std::endl;
+			std::cout << "x: " << msg->x  << std::endl;
+			std::cout << "y: " << msg->y << std::endl;
+			std::cout << "z: " << msg->z  << std::endl;
+			*/
+			
+			recent_ned_msg = std::make_unique<px4_msgs::msg::VehicleOdometry>(*msg);
+			//std::cout << "recent_ned_msg timestamp (should be same as above): " << recent_ned_msg->timestamp << std::endl;
 			
 		});
 	}
 
 private:
-	rclcpp::Subscription<px4_msgs::msg::VehicleGlobalPosition>::SharedPtr subscription_;
+	rclcpp::Subscription<px4_msgs::msg::VehicleGlobalPosition>::SharedPtr subscription_gps;
+	rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr subscription_ned;
 };
 
 /*
@@ -94,4 +120,5 @@ int main(int argc, char *argv[])
 
 	rclcpp::shutdown();
 	return 0;
-}*/
+}
+*/
