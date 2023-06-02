@@ -161,6 +161,8 @@ The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https:/
     send:    true
   - msg:     vehicle_global_position
     send:    true
+  - msg:     vehicle_local_position
+    send:    true
 ```
 
 Afterwards you have to make a clean rebuild of PX4-Autopilot and the px4_ros_com package. You might also want to add the line `source ~/px4_ros_com_ros2/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the _px4_ros_com_ros2_ workspace every time you start a new terminal tab within the WSL2 instance.
@@ -176,7 +178,7 @@ Afterwards you have to make a clean rebuild of PX4-Autopilot and the px4_ros_com
 >
 >``` cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source clean_all.bash ```
 
-At this point the additional topic types `BatteryStatus publisher` and `VehicleGlobalPosition publisher` should show up after starting the micrortps_agent(which corresponds to the "ROS2 Bridge" module in the system diagram).
+At this point the additional topic types `BatteryStatus publisher`, `VehicleGlobalPosition publisher` and `VehicleLocalPosition publisher` should show up after starting the micrortps_agent(which corresponds to the "ROS2 Bridge" module in the system diagram).
 Next, copy the following files from within the `Offboard_Control` folder of this repo to `~\px4_ros_com_ros2\src\px4_ros_com\src\examples\offboard`:
 - `battery_status_listener_lib.cpp`
 - `vehicle_global_position_listener_lib.cpp`
