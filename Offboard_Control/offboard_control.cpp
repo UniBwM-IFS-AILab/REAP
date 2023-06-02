@@ -34,8 +34,7 @@
  * @brief Offboard control example
  * @file offboard_control.cpp
  * @addtogroup examples
- * @author Mickey Cowden <info@cowden.tech>
- * @author Nuno Marques <nuno.marques@dronesolutions.io>
+ * @author Lucas Mair <lucas.mair@unibw.de>
 
  * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
  * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info. 
@@ -115,7 +114,7 @@ public:
 		
 		//get content from listeners
 		battery_listener_ = battery_listener; //->recent_msg->timestamp;
-		gps_listener_ = gps_listener; //->recent_msg->timestamp;
+		gps_listener_ = gps_listener; //->recent_gps_msg->timestamp;
 
 		// get common timestamp
 		timesync_sub_ =
@@ -300,7 +299,7 @@ private:
 			current_times++;
 			RCLCPP_INFO(this->get_logger(), "publishing setpoint number %d ", current_times);
 			
-			//RCLCPP_INFO(this->get_logger(), "Current GPS position: %lf, %lf, %lf", gps_listener_->recent_msg->lat, gps_listener_->recent_msg->lon, gps_listener_->recent_msg->alt);
+			//RCLCPP_INFO(this->get_logger(), "Current GPS position: %lf, %lf, %lf", gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, gps_listener_->recent_gps_msg->alt);
 			
 			//NED frame doesnt reset once reaching a waypoint
 			distance = move_to_gps(pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z);
@@ -334,7 +333,7 @@ private:
 		auto result = std::make_shared<NavigateToPose::Result>();
 		
 		// set home gps origin for reference when receiving takeoff command
-		GPS_converter_ = std::make_shared<GeodeticConverter>(gps_listener_->recent_msg->lat, gps_listener_->recent_msg->lon);
+		GPS_converter_ = std::make_shared<GeodeticConverter>(gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon);
 		RCLCPP_INFO(this->get_logger(), "Set GPS Origin to current position");
 		
 		publish_offboard_control_mode();
@@ -347,7 +346,7 @@ private:
 		while (rclcpp::ok()) {
 			loop_rate.sleep();
 			
-			if (rclcpp::ok() && gps_listener_->recent_msg->alt > 5) {
+			if (rclcpp::ok() && gps_listener_->recent_gps_msg->alt > 5) {
 				loop_rate.sleep();
 				goal_handle->succeed(result);
 				RCLCPP_INFO(this->get_logger(), "Takeoff Succeeded");
@@ -387,7 +386,7 @@ private:
 		}
 		while (rclcpp::ok()) {
 			loop_rate.sleep();
-			if (rclcpp::ok() && gps_listener_->recent_msg->alt < 5) {
+			if (rclcpp::ok() && gps_listener_->recent_gps_msg->alt < 5) {
 				loop_rate.sleep();
 				goal_handle->succeed(result);
 				RCLCPP_INFO(this->get_logger(), "Landing Succeeded");
@@ -402,7 +401,7 @@ private:
 	 */
 	void OffboardControl::takeoff() {
 		// Takeoff from ground / hand |Minimum pitch (if airspeed sensor present), desired pitch without sensor| Empty| Empty| Yaw angle (if magnetometer present), ignored without magnetometer| Latitude| Longitude| Altitude|
-		publish_vehicle_command(VehicleCommand::VEHICLE_CMD_NAV_TAKEOFF, 0, 0, 0, 0, gps_listener_->recent_msg->lat, gps_listener_->recent_msg->lon, 10);
+		publish_vehicle_command(VehicleCommand::VEHICLE_CMD_NAV_TAKEOFF, 0, 0, 0, 0, gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, 10);
 		RCLCPP_INFO(this->get_logger(), "Takeoff command send");
 		rclcpp::Rate sleep_timer(2);
 		sleep_timer.sleep();
@@ -480,21 +479,28 @@ private:
 		double north, east, down;
 		GPS_converter_->geodetic2Ned(latitude, longitude, altitude, &north, &east, &down);
 		
-		//Current NED coordinates relative to origin
+		//Current NED coordinates relative to origin 
+		//changed from calculating via geodetic_utils to listening from PX4
 		double current_north, current_east, current_down;
-		GPS_converter_->geodetic2Ned(gps_listener_->recent_msg->lat, gps_listener_->recent_msg->lon, gps_listener_->recent_msg->alt, 
-										&current_north, &current_east, &current_down);
-										
+		// old calculation
+		//GPS_converter_->geodetic2Ned(gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, gps_listener_->recent_gps_msg->alt, 
+		//								&current_north, &current_east, &current_down);
+		
+		//new receive from PX4
+		current_north = gps_listener_->recent_ned_msg->x;
+		current_east = gps_listener_->recent_ned_msg->y;
+		current_down = gps_listener_->recent_ned_msg->z;
+		
 		double delta_n = north - current_north, delta_e = east - current_east, delta_d = down - current_down;
 		//discretize delta values
 		delta_n = GPS_converter_->discretize(delta_n,5);
 		delta_e = GPS_converter_->discretize(delta_e,5);
 		delta_d = GPS_converter_->discretize(delta_d,5);
 										
-		RCLCPP_INFO(this->get_logger(), "Current GPS position: %lf, %lf, %lf", gps_listener_->recent_msg->lat, gps_listener_->recent_msg->lon, gps_listener_->recent_msg->alt);
+		RCLCPP_INFO(this->get_logger(), "Current GPS position: %lf, %lf, %lf", gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, gps_listener_->recent_gps_msg->alt);
+		RCLCPP_INFO(this->get_logger(), "Target GPS position: %lf, %lf, %lf", latitude, longitude, altitude);
 		RCLCPP_INFO(this->get_logger(), "Current position in NED frame: %lf, %lf, %lf", current_north, current_east, current_down);
 		RCLCPP_INFO(this->get_logger(), "Target position in NED frame: %lf, %lf, %lf", north, east, down);
-		//dont adjust for flown distance so far!!!! It still considers the same reference frame until reaching the target
 		//NED frame doesnt reset once reaching a waypoint
 		//RCLCPP_INFO(this->get_logger(), "Set trajectory point to relative NED coordinates: %lf, %lf, %lf", delta_n, delta_e, delta_d);
 		
