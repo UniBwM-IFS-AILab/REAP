@@ -176,7 +176,7 @@ For the `urtps_bridge_topics.yaml` of the *px4_ros_com* package you have to make
 >
 >``` cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source clean_all.bash ```
 
-At this point the additional topic types `BatteryStatus publisher` and `VehicleGlobalPosition publisher` should show up after starting the micrortps_agent(which corresponds to the "ROS2 Bridge" module in the system diagram).
+At this point the additional topic types `BatteryStatus publisher` and `VehicleGlobalPosition publisher` should show up after starting the micrortps_agent (which corresponds to the "ROS2 Bridge" module in the system diagram).
 Next, copy the following files from within the `Offboard_Control` folder of this repo to `~\px4_ros_com_ros2\src\px4_ros_com\src\examples\offboard`:
 - `battery_status_listener_lib.cpp`
 - `vehicle_global_position_listener_lib.cpp`
@@ -184,7 +184,7 @@ Next, copy the following files from within the `Offboard_Control` folder of this
 - replace the original `offboard_control.cpp` with the one from this repo.
 
 Finally replace the file `CMakeLists.txt` in the directory `~\px4_ros_com_ros2\src\px4_ros_com` with the modified version of this repo as well.
-Rebuild the micrortps_agent and the offboard_control(**Action Server**) via the command `cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
+Rebuild the micrortps_agent and the offboard_control (**Action Server**) via the command `cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
 
 Now, if the AI-planning subsystem has also been setup, you should be able to run the whole framework by executing the following lines (in separate tabs) after starting the Unreal Simulation. If you are using our provided `aliases.sh` you can also just execute the shellscript `start_upf_simulation.sh` from this repo instead.
 ```
