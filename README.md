@@ -154,7 +154,7 @@ cd ~/px4_ros_com_ros2; ros2 run px4_ros_com offboard_control
 * * *
 
 #### Setting up the Action Server
-The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https://docs.px4.io/v1.13/en/ros/ros2_offboard_control.html) in the official PX4 documentation. If you want to make use of GPS-based drone waypoints and read out the state of battery charge, you first have to enable relevant message types by editing the file `urtps_bridge_topics.yaml` both in the PX4-Autopilot and the *px4_ros_com* package. It works as described in the "Requirements" section of the ROS 2 Offboard Control Example, but with the additional message types `battery_status` and `vehicle_global_position`. Just append the following lines at the end of the `urtps_bridge_topics.yaml` files:
+The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https://docs.px4.io/v1.13/en/ros/ros2_offboard_control.html) in the official PX4 documentation. If you want to make use of GPS-based drone waypoints and read out the state of battery charge, you first have to enable relevant message types by editing the file `urtps_bridge_topics.yaml` both in the PX4-Autopilot and the *px4_ros_com* package. It works as described in the "Requirements" section of the ROS 2 Offboard Control Example, but with the additional message types `battery_status`, `vehicle_global_position` and `vehicle_local_position`. Just append the following lines at the end of the `urtps_bridge_topics.yaml` file of the PX4-Autopilot:
 
 ```
   - msg:     battery_status
@@ -165,7 +165,7 @@ The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https:/
     send:    true
 ```
 
-Afterwards you have to make a clean rebuild of PX4-Autopilot and the px4_ros_com package. You might also want to add the line `source ~/px4_ros_com_ros2/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the _px4_ros_com_ros2_ workspace every time you start a new terminal tab within the WSL2 instance.
+For the `urtps_bridge_topics.yaml` of the *px4_ros_com* package you have to make similar changes, just using slightly different naming conventions (e.g. `VehicleGlobalPosition` instead of `vehicle_global_position`). Afterwards you have to make a clean rebuild of PX4-Autopilot and the *px4_ros_com* package. You might also want to add the line `source ~/px4_ros_com_ros2/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the _px4_ros_com_ros2_ workspace every time you start a new terminal tab within the WSL2 instance.
 
 >**⚠ Info** If you already enabled the message types but they still aren't listed as topics after starting the micrortps_agent, the following links might help:
 >- https://github.com/PX4/px4_ros_com/issues/124
