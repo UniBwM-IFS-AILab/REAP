@@ -154,14 +154,12 @@ cd ~/px4_ros_com_ros2; ros2 run px4_ros_com offboard_control
 * * *
 
 #### Setting up the Action Server
-The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https://docs.px4.io/v1.13/en/ros/ros2_offboard_control.html) in the official PX4 documentation. If you want to make use of GPS-based drone waypoints and read out the state of battery charge, you first have to enable relevant message types by editing the file `urtps_bridge_topics.yaml` both in the PX4-Autopilot and the *px4_ros_com* package. It works as described in the "Requirements" section of the ROS 2 Offboard Control Example, but with the additional message types `battery_status`, `vehicle_global_position` and `vehicle_local_position`. Just append the following lines at the end of the `urtps_bridge_topics.yaml` file of the PX4-Autopilot:
+The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https://docs.px4.io/v1.13/en/ros/ros2_offboard_control.html) in the official PX4 documentation. If you want to make use of GPS-based drone waypoints and read out the state of battery charge, you first have to enable relevant message types by editing the file `urtps_bridge_topics.yaml` both in the PX4-Autopilot and the *px4_ros_com* package. It works as described in the "Requirements" section of the ROS 2 Offboard Control Example, but with the additional message types `battery_status` and `vehicle_global_position`. Just append the following lines at the end of the `urtps_bridge_topics.yaml` file of the PX4-Autopilot:
 
 ```
   - msg:     battery_status
     send:    true
   - msg:     vehicle_global_position
-    send:    true
-  - msg:     vehicle_local_position
     send:    true
 ```
 
@@ -178,7 +176,7 @@ For the `urtps_bridge_topics.yaml` of the *px4_ros_com* package you have to make
 >
 >``` cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source clean_all.bash ```
 
-At this point the additional topic types `BatteryStatus publisher`, `VehicleGlobalPosition publisher` and `VehicleLocalPosition publisher` should show up after starting the micrortps_agent(which corresponds to the "ROS2 Bridge" module in the system diagram).
+At this point the additional topic types `BatteryStatus publisher` and `VehicleGlobalPosition publisher` should show up after starting the micrortps_agent(which corresponds to the "ROS2 Bridge" module in the system diagram).
 Next, copy the following files from within the `Offboard_Control` folder of this repo to `~\px4_ros_com_ros2\src\px4_ros_com\src\examples\offboard`:
 - `battery_status_listener_lib.cpp`
 - `vehicle_global_position_listener_lib.cpp`
