@@ -35,6 +35,7 @@
  * @file vehicle_global_position_listener_lib.cpp
  * @addtogroup lib
  * @author Lucas Mair <lucas.mair@unibw.de>
+ * @author Nuno Marques <nuno.marques@dronesolutions.io>
  */
 
 #include <rclcpp/rclcpp.hpp>
@@ -51,7 +52,8 @@ public:
 	px4_msgs::msg::VehicleGlobalPosition::SharedPtr recent_gps_msg;
 	px4_msgs::msg::VehicleOdometry::SharedPtr recent_ned_msg;
 	
-	explicit VehicleGlobalPositionListener() : Node("vehicle_global_position_listener") {
+	// name_prefix should have the format "<identifier>/"
+	explicit VehicleGlobalPositionListener(std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "vehicle_global_position_listener") {
 		
 		px4_msgs::msg::VehicleGlobalPosition empty_gps_msg{};
 		recent_gps_msg = std::make_shared<px4_msgs::msg::VehicleGlobalPosition>(std::move(empty_gps_msg));
@@ -59,7 +61,7 @@ public:
 		recent_ned_msg = std::make_shared<px4_msgs::msg::VehicleOdometry>(std::move(empty_ned_msg));
 		
 		subscription_gps = this->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(
-			"fmu/vehicle_global_position/out",
+			name_prefix + "fmu/vehicle_global_position/out",
 #ifdef ROS_DEFAULT_API
             10,
 #endif
@@ -84,7 +86,7 @@ public:
 		
 		std::cout << "Setup local position subscriber (odometry)..." << std::endl;
 		subscription_ned = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
-			"fmu/vehicle_odometry/out",
+			name_prefix + "fmu/vehicle_odometry/out",
 #ifdef ROS_DEFAULT_API
             10,
 #endif
