@@ -3,7 +3,7 @@
 ![image](https://user-images.githubusercontent.com/92592126/235185659-75937f07-1976-4b61-9ffa-43ad95e4c472.png)
 
 
-This repository contains installation information for the REAP framework as described in (link to publication here).<br />
+This repository contains installation information for the REAP framework as described in ["the ICAPS 2023 System Demonstrations paper"](https://icaps23.icaps-conference.org/program/demos/#3216).<br />
 A demo video provides an overview of the framework: https://www.youtube.com/watch?v=QtMjnMD5zzE.
 
 To cite **REAP**, please use the following reference: <br />
