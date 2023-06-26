@@ -24,8 +24,8 @@ alias rebuild_agent='cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build
 alias start_offboard_control='cd ~/px4_ros_com_ros2;sleep 2; ros2 run px4_ros_com offboard_control'
 alias rebuild_offboard='rebuild_agent'
 
-alias start_upf4ros='cd ~/PlanSys; source install/local_setup.bash; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py'
-alias start_plan_executor='cd ~/PlanSys; source install/local_setup.bash; source install/setup.bash; sleep 6; ros2 launch upf4ros2_demo traverse_areas.launch.py'
+alias start_upf4ros='cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py'
+alias start_plan_executor='cd ~/PlanSys; source install/setup.bash; sleep 6; ros2 launch upf4ros2_demo traverse_areas.launch.py'
 
 alias start_simulation='~/start_upf_simulation.sh'
 
