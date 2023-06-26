@@ -3,7 +3,7 @@
 ![image](https://user-images.githubusercontent.com/92592126/235185659-75937f07-1976-4b61-9ffa-43ad95e4c472.png)
 
 
-This repository contains installation information for the REAP framework as described in ["the ICAPS 2023 System Demonstrations paper"](https://icaps23.icaps-conference.org/program/demos/#3216).<br />
+This repository contains installation information for the REAP framework as described in [the ICAPS 2023 Demo paper](https://icaps23.icaps-conference.org/program/demos/#3216).<br />
 A demo video provides an overview of the framework: https://www.youtube.com/watch?v=QtMjnMD5zzE.
 
 To cite **REAP**, please use the following reference: <br />
@@ -38,7 +38,8 @@ Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulatio
 You can quickly set up the framework with a provided tarball as descibed in [Installation with Tarball](#installation-with-tarball). For full installation details see the [Manual Installation (without Tarball)](#manual-installation-without-tarball). You can find information on how to customize the framework to your needs under [Editing the Simulation Environment](#editing-the-simulation-environment).
 
 Below you can find an overview of the system architecture. The provided tarball contains all modules, except the "Simulator" module and the AirSim API from the "Environment Manipulation" module. QGroundControl and the Unreal Remote Control API can run either under Windows or the WSL instance if the IP settings are adjusted accordingly.
-![image](https://user-images.githubusercontent.com/92592126/235682354-15a2d7e3-4c66-4561-81dd-e6cae6041ecc.png)
+
+![Step11](https://github.com/UniBwM-IFS-AILab/REAP/assets/10440274/75556251-e737-44d0-bb77-b0e991ce2c37)
 
 ## System requirements
 We tested REAP using the following development environment. Deviation may not necessary cripple the system, but we cannot guarantee that it will work.
