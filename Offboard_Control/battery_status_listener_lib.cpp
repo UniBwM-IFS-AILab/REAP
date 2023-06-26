@@ -56,14 +56,15 @@ public:
 	
 	px4_msgs::msg::BatteryStatus::SharedPtr recent_msg;
 	
-	explicit BatteryStatusListener() : Node("battery_status_listener") {
+	// name_prefix should have the format "<identifier>/"
+	explicit BatteryStatusListener(std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "battery_status_listener") {
 		px4_msgs::msg::BatteryStatus empty_msg{};
 		recent_msg = std::make_shared<px4_msgs::msg::BatteryStatus>(std::move(empty_msg));
 		
 		std::cout << "created empty initial message in battery_listener" << std::endl;
 		
 		subscription_ = this->create_subscription<px4_msgs::msg::BatteryStatus>(
-			"fmu/battery_status/out",
+			name_prefix + "fmu/battery_status/out",
 #ifdef ROS_DEFAULT_API
             10,
 #endif
