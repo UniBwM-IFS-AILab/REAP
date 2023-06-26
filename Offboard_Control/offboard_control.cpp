@@ -34,7 +34,8 @@
  * @brief Offboard control example
  * @file offboard_control.cpp
  * @addtogroup examples
- * @author Lucas Mair <lucas.mair@unibw.de>
+ * @author Mickey Cowden <info@cowden.tech>
+ * @author Nuno Marques <nuno.marques@dronesolutions.io>
 
  * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
  * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info. 
@@ -86,24 +87,26 @@ public:
 	std::shared_ptr<BatteryStatusListener> battery_listener_;
 	std::shared_ptr<VehicleGlobalPositionListener> gps_listener_;
 
-	OffboardControl(std::shared_ptr<BatteryStatusListener> battery_listener, std::shared_ptr<VehicleGlobalPositionListener> gps_listener) : Node("offboard_control") {
-	//OffboardControl() : Node("offboard_control") {
+	// name_prefix should have the format "<identifier>/"
+	OffboardControl(std::shared_ptr<BatteryStatusListener> battery_listener, std::shared_ptr<VehicleGlobalPositionListener> gps_listener, std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "offboard_control") {
 #ifdef ROS_DEFAULT_API
 		offboard_control_mode_publisher_ =
-			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in", 10);
+			this->create_publisher<OffboardControlMode>(name_prefix + "fmu/offboard_control_mode/in", 10);
 		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in", 10);
+			this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/trajectory_setpoint/in", 10);
 		vehicle_command_publisher_ =
-			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in", 10);
+			this->create_publisher<VehicleCommand>(name_prefix + "fmu/vehicle_command/in", 10);
 #else
 		offboard_control_mode_publisher_ =
-			this->create_publisher<OffboardControlMode>("fmu/offboard_control_mode/in");
+			this->create_publisher<OffboardControlMode>(name_prefix + "fmu/offboard_control_mode/in");
 		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>("fmu/trajectory_setpoint/in");
+			this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/trajectory_setpoint/in");
 		vehicle_command_publisher_ =
-			this->create_publisher<VehicleCommand>("fmu/vehicle_command/in");
+			this->create_publisher<VehicleCommand>(name_prefix + "fmu/vehicle_command/in");
 #endif
 
+		name_prefix_ = name_prefix;
+		
 		//GPS Conversion test
 		// given GPS coordinates are dummy numbers for initialization, actual Home position is set automatically in takeoff (based on settings.json)
 		GPS_converter_ = std::make_shared<GeodeticConverter>(48.0260, 11.8725);
@@ -118,7 +121,7 @@ public:
 
 		// get common timestamp
 		timesync_sub_ =
-			this->create_subscription<px4_msgs::msg::Timesync>("fmu/timesync/out", 10,
+			this->create_subscription<px4_msgs::msg::Timesync>(name_prefix + "fmu/timesync/out", 10,
 				[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
 					timestamp_.store(msg->timestamp);
 				});
@@ -167,23 +170,23 @@ public:
 		
 		RCLCPP_INFO(get_logger(), "Starting action server:");
 
-		repeat_sentence_action_server_ = rclcpp_action::create_server<NavigateToPose>(
+		waypoint_action_server_ = rclcpp_action::create_server<NavigateToPose>(
 			shared_from_this(),
-			"navigate_to_pose",
+			name_prefix_ + "navigate_to_pose",
 			std::bind(&OffboardControl::handle_goal_waypoint, this, _1, _2),
 			std::bind(&OffboardControl::handle_cancel, this, _1),
 			std::bind(&OffboardControl::handle_accepted_waypoint, this, _1));
 			
 		takeoff_action_server_ = rclcpp_action::create_server<NavigateToPose>(
 			shared_from_this(),
-			"takeoff",
+			name_prefix_ + "takeoff",
 			std::bind(&OffboardControl::handle_goal_takeoff, this, _1, _2),
 			std::bind(&OffboardControl::handle_cancel, this, _1),
 			std::bind(&OffboardControl::handle_accepted_takeoff, this, _1));
 			
 		landing_action_server_ = rclcpp_action::create_server<NavigateToPose>(
 			shared_from_this(),
-			"landing",
+			name_prefix_ + "landing",
 			std::bind(&OffboardControl::handle_goal_landing, this, _1, _2),
 			std::bind(&OffboardControl::handle_cancel, this, _1),
 			std::bind(&OffboardControl::handle_accepted_landing, this, _1));
@@ -196,7 +199,7 @@ public:
 
 private:
 
-	rclcpp_action::Server<NavigateToPose>::SharedPtr repeat_sentence_action_server_;
+	rclcpp_action::Server<NavigateToPose>::SharedPtr waypoint_action_server_;
 	rclcpp_action::Server<NavigateToPose>::SharedPtr takeoff_action_server_;
 	rclcpp_action::Server<NavigateToPose>::SharedPtr landing_action_server_;
 	NavigateToPose::Goal current_goal_;
@@ -214,12 +217,14 @@ private:
 
 	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
 	bool is_flying_ = false; //!< boolean for checking if the drone needs to arm and takeoff
+	std::string name_prefix_;
 
 	void takeoff();
 	void land(double latitude = 0.0, double longitude = 0.0, double altitude = 0.0);
 	double move_to_gps(double latitude, double longitude, double altitude) const;
 	void publish_offboard_control_mode() const;
 	void publish_trajectory_setpoint() const;
+	void hover_in_position() const;
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0, float param3 = 0.0, float param4 = 0.0, float param5 = 0.0, float param6 = 0.0, float param7 = 0.0) const;
 	
 	
@@ -308,6 +313,7 @@ private:
 			RCLCPP_INFO(this->get_logger(), "current distance: %lf ", distance);
 			
 			if (goal_handle->is_canceling()) {
+				this->hover_in_position();
 				goal_handle->canceled(result);
 				RCLCPP_INFO(this->get_logger(), "Action Canceled");
 				return;
@@ -340,6 +346,13 @@ private:
 		if(!is_flying_){
 			this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
 			this->arm();
+			
+			if (goal_handle->is_canceling()) {
+				this->disarm();
+				goal_handle->canceled(result);
+				RCLCPP_INFO(this->get_logger(), "Action Canceled");
+				return;
+			}
 			this->takeoff();
 		}
 		
@@ -370,8 +383,15 @@ private:
 		
 		double distance = 0;
 		while (rclcpp::ok()) {
+			
+			if (goal_handle->is_canceling()) {
+				this->hover_in_position();
+				goal_handle->canceled(result);
+				RCLCPP_INFO(this->get_logger(), "Action Canceled");
+				return;
+			}
+			
 			loop_rate.sleep();
-		
 			distance = move_to_gps(home_lat, home_lon, 20);
 			
 			if(distance < 5){
@@ -463,9 +483,31 @@ private:
 	void OffboardControl::publish_trajectory_setpoint() const {
 		TrajectorySetpoint msg{};
 		msg.timestamp = timestamp_.load();
-		msg.position = {0.0, 0.0, -50.0};
+		msg.position = {0.0, 0.0, -5.0};
 		msg.yaw = -3.14; // [-PI:PI]
 
+		trajectory_setpoint_publisher_->publish(msg);
+	}
+	
+	/**
+	 * @brief Publish a trajectory setpoint
+	 *        For this example, it sends a trajectory setpoint to make the
+	 *        vehicle hover at 5 meters with a yaw angle of 180 degrees.
+	 */
+	void OffboardControl::hover_in_position() const {
+		TrajectorySetpoint msg{};
+		msg.timestamp = timestamp_.load();
+		
+		double current_north, current_east, current_down;
+		
+		current_north = gps_listener_->recent_ned_msg->x;
+		current_east = gps_listener_->recent_ned_msg->y;
+		current_down = gps_listener_->recent_ned_msg->z;
+		
+		msg.position = {current_north, current_east, current_down};
+		msg.yaw = 0; // [-PI:PI]
+		
+		publish_offboard_control_mode();
 		trajectory_setpoint_publisher_->publish(msg);
 	}
 	
@@ -555,10 +597,15 @@ int main(int argc, char* argv[]) {
 	std::cout << "Starting offboard control node..." << std::endl;
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 	rclcpp::init(argc, argv);
+	std::string name_prefix = "";
+	if(argv[1]!=NULL){
+		name_prefix = argv[1];
+	}
+	std::cout << "name_prefix is: " << name_prefix << std::endl;
 	
-	auto battery_listener = std::make_shared<BatteryStatusListener>();
-	auto gps_listener = std::make_shared<VehicleGlobalPositionListener>();
-	auto controller = std::make_shared<OffboardControl>(battery_listener, gps_listener);
+	auto battery_listener = std::make_shared<BatteryStatusListener>(name_prefix);
+	auto gps_listener = std::make_shared<VehicleGlobalPositionListener>(name_prefix);
+	auto controller = std::make_shared<OffboardControl>(battery_listener, gps_listener, name_prefix);
 	
 	controller -> start_server(); // <-- this works
 	
