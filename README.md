@@ -90,7 +90,7 @@ command="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -executio
 ```
 To test if the powershell script works, execute `wsl --shutdown`, wait a few seconds, then restart the WSL instance. `ipconfig` should now show a second ip address for "vEthernet (WSL)". When the script gets executed, it should also print out `setting static vEthernet (WSL) ip address...` when first starting the WSL instance.
 
-If no static ip address is used, the AirSim settings.json `"LocalHostIp"` field has to be manually changed after each windows reboot with the new WSL address.
+If no static ip address is used, the AirSim settings.json `"LocalHostIp"` field has to be manually changed after each Windows reboot with the new WSL address.
 Additional information can be found here: https://microsoft.github.io/AirSim/px4_sitl_wsl2/.
 
 
@@ -217,7 +217,7 @@ needs to be changed to:
 "objectPath" : "/Game/Maps/UEDPIE_0_SunTemple.SunTemple:PersistentLevel.Bp_SpawnPoint_2"
 ```
 
-For setup information of the AirSim API see: https://microsoft.github.io/AirSim/apis/. This API allows you to impact the physics simulation (e.g. simulate wind or rain). An example python script ("remoteControlWeather.py") that has to run from within windows is provided in this repo.
+For setup information of the AirSim API see: https://microsoft.github.io/AirSim/apis/. This API allows you to impact the physics simulation (e.g. simulate wind or rain). An example python script ("remoteControlWeather.py") that has to run from within Windows is provided in this repo.
 
 ## Editing the Simulation Environment
 
