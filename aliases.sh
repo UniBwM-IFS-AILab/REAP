@@ -13,7 +13,7 @@ export FASTRTPSGEN_DIR="/usr/local/bin/"
 export PYTHONWARNINGS="ignore:setup.py install is deprecated,ignore:easy_install command is deprecated"
 
 # setting for avoiding gui errors:
-unset XDG_RUNTIME_DIR
+# unset XDG_RUNTIME_DIR
 
 #alias start_px4='cd ~/PX4-Autopilot; make px4_sitl_default none_iris'
 alias start_px4='cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris'
@@ -39,7 +39,6 @@ ros_setup
 
 # cd shortcuts
 alias cd_win='cd /mnt/c'
-alias cd_wordlist='cd /usr/share/wordlists'
 
 # utility shortcut
 alias fullpath='echo '
@@ -62,8 +61,3 @@ alias cmd='/mnt/c/Windows/System32/cmd.exe '
 alias permission_folder='sudo chown -R companion '
 # make a single file (e.g. shell script executable)
 alias make_executable='sudo chmod +x '
-
-lsh() {
-    [ -s .hidden ] && echo "lsh: hiding $(wc -l .hidden) patterns" && ls $@ | grep -v -F "$(cat .hidden)";
-    [ ! -f .hidden ] && ls $@
-}
