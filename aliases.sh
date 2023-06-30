@@ -29,6 +29,9 @@ alias rebuild_offboard='rebuild_agent'
 alias start_upf4ros='cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py'
 alias start_plan_executor='cd ~/PlanSys; source install/setup.bash; sleep 6; ros2 launch upf4ros2_demo traverse_areas.launch.py'
 
+alias start_game_solve="cd ~/PlanSys; ros2 launch upf4ros2_demo roswrap.launch.py"
+alias start_pyqgis_window="cd ~/PlanSys/src/UPF4ROS2/upf4ros2_demo/upf4ros2_demo; python3 -i qgis_window.py"
+
 alias start_simulation='~/start_upf_simulation.sh'
 
 # source ROS2 environment and also source ROS2 Bridge workspace
