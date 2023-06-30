@@ -69,6 +69,7 @@
 #include <stdint.h>
 
 #include <chrono>
+#include <thread>
 #include <iostream>
 
 
@@ -598,10 +599,19 @@ int main(int argc, char* argv[]) {
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 	rclcpp::init(argc, argv);
 	std::string name_prefix = "";
-	if(argv[1]!=NULL){
+	
+	std::cout << "printing argv[]..." << std::endl;
+	for (int i = 0; i < argc; ++i)
+	{
+		RCLCPP_INFO(rclcpp::get_logger("main"), "Argument %d: %s", i, argv[i]);
+	}
+	
+	if(argv[1]!=NULL && strcmp(argv[1],"--ros-args")!=0){
 		name_prefix = argv[1];
 	}
-	std::cout << "name_prefix is: " << name_prefix << std::endl;
+	//std::cout << "name_prefix is: " << name_prefix << std::endl;
+	
+	//std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	
 	auto battery_listener = std::make_shared<BatteryStatusListener>(name_prefix);
 	auto gps_listener = std::make_shared<VehicleGlobalPositionListener>(name_prefix);
