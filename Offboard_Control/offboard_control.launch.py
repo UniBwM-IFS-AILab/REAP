@@ -19,17 +19,31 @@ def generate_launch_description():
     #number of nodes to start
     count = 3
     offboard_control =  []
-    
-    for x in range(0, count):
+
+    if count < 2:
+        name_prefix = ""
         offboard_control.append(
             Node(
                 package='px4_ros_com',
                 executable='offboard_control',
                 output='screen',
                 shell=True,
-                arguments=['vhcl'+ str(x) +'/']
+                arguments=[name_prefix]
             )
         )
+    else:
+        for x in range(0, count):
+            name_prefix = 'vhcl'+ str(x) +'/'
+            offboard_control.append(
+                Node(
+                    package='px4_ros_com',
+                    executable='offboard_control',
+                    output='screen',
+                    shell=True,
+                    arguments=[name_prefix]
+                )
+            )
+    
 
     return LaunchDescription(
         #micro_ros_agent,
