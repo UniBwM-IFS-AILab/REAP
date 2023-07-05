@@ -586,6 +586,7 @@ private:
 		msg.command = command;
 		
 		// the target_system field makes problems with mutiple drones... set to 0 to ignore
+		// related to mavlink system id
 		msg.target_system = 0;
 		msg.target_component = 1;
 		
