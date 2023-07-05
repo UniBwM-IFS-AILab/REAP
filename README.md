@@ -141,7 +141,7 @@ The first module that will be installed is the flight control software PX4 and t
  - `pip3 install --user -U kconfiglib empy pyros-genmsg setuptools`.
  - `sudo apt install python3-testresources python3-genmsg`.
  - Use Java JDK version 11 (`sudo update-alternatives --config java`), install version 11 if not available as choice.
- - We provide our aliases.sh file which might help. If you want to use it, copy its content into /etc/profile.d/aliases.sh.
+ - We provide our aliases.sh file which might help. If you want to use it, copy its content into /etc/profile.d/aliases.sh. Normally shell scripts in that directory should be automatically sourced (from the /etc/profile executable).
 
 When the sanity check succeeds, you should be able to execute the following steps after running the Unreal Simulation in order to remotely control the drone. Execute each line in a separate terminal tab:
 ```
