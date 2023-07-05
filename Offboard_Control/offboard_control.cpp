@@ -584,8 +584,11 @@ private:
 		msg.param6 = param6;
 		msg.param7 = param7;
 		msg.command = command;
-		msg.target_system = 1;
+		
+		// the target_system field makes problems with mutiple drones... set to 0 to ignore
+		msg.target_system = 0;
 		msg.target_component = 1;
+		
 		msg.source_system = 1;
 		msg.source_component = 1;
 		msg.from_external = true;
