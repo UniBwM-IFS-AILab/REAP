@@ -136,18 +136,19 @@ function(final_executable subfolder target)
 endfunction()
 
 # Add examples
-custom_executable(examples/listeners sensor_combined_listener)
-custom_executable(examples/listeners battery_status_listener)
-custom_executable(examples/listeners vehicle_gps_position_listener)
-custom_executable(examples/listeners vehicle_global_position_listener)
-custom_executable(examples/advertisers debug_vect_advertiser)
+#custom_executable(examples/listeners sensor_combined_listener)
+#custom_executable(examples/listeners battery_status_listener)
+#custom_executable(examples/listeners vehicle_gps_position_listener)
+#custom_executable(examples/listeners vehicle_global_position_listener)
+#custom_executable(examples/advertisers debug_vect_advertiser)
 #custom_executable(examples/offboard offboard_control)
 
 # test:
-#custom_executable(examples/listeners battery_status_listener_lib) # <-- funktioniert
-#custom_executable(lib battery_status_listener_lib) # <-- funktioniert
-#custom_executable(lib vehicle_global_position_listener_lib) # <-- funktioniert
+#custom_executable(examples/listeners battery_status_listener_lib)
+#custom_executable(lib battery_status_listener_lib)
+#custom_executable(lib vehicle_global_position_listener_lib)
 
+# REAP framework: Action server controlling the drone
 final_executable(examples/offboard offboard_control)
 
 ############
