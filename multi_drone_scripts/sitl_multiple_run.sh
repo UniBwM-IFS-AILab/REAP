@@ -28,7 +28,8 @@ while [ $n -lt $sitl_num ]; do
 
 	pushd "$working_dir" &>/dev/null
 	echo "starting instance $n in $(pwd)"
-	../bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS >out.log 2>err.log &
+	# ../bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS >out.log 2>err.log &
+ 	../bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS &>/dev/null &
 	popd &>/dev/null
 
 	n=$(($n + 1))
