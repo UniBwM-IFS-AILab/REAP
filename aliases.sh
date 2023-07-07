@@ -22,7 +22,7 @@ alias start_px4_multiple='~/PX4-Autopilot/Tools/sitl_multiple_run.sh 3'
 alias start_rtps_holy='cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris_mod'
 
 alias start_rtps_agent='micrortps_agent -t UDP'
-alias start_rtps_multiple='~/PX4-Autopilot/multi_drone_scripts/run_multiple_ros2_bridges.sh 3'
+alias start_rtps_multiple='sleep 1; ~/PX4-Autopilot/multi_drone_scripts/run_multiple_ros2_bridges.sh 3'
 alias rebuild_agent='cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build_ros2_workspace.bash; cd ~'
 
 alias start_offboard_control='cd ~/px4_ros_com_ros2;sleep 2; ros2 run px4_ros_com offboard_control'
