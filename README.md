@@ -45,7 +45,7 @@ Below you can find an overview of the system architecture. The provided tarball 
 We tested REAP using the following development environment. Deviation may not necessary cripple the system, but we cannot guarantee that it will work.
   - Windows 11
   - WSL2 instance (Ubuntu 20.04) (Installation instructions here: https://learn.microsoft.com/en-us/windows/wsl/install)
-  - ROS2 foxy installed on the same WSL2 Ubuntu instance (Installation instructions here: https://docs.ros.org/en/foxy/Installation.html)
+  - ROS2 galactic installed on the same WSL2 Ubuntu instance (Installation instructions here: https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html)
 
 ## Installation with Tarball
 
@@ -109,7 +109,7 @@ Follow the instructions under [Installation with Tarball](#installation-with-tar
 > **⚠ Info**
 > You might need to install following packages so PlanSys2 works as intended
 >
-> ``` sudo apt install ros-foxy-nav2-msgs ros-foxy-test-msgs ```
+> ``` sudo apt install ros-galactic-nav2-msgs ros-galactic-test-msgs ```
 >
 > After running `colcon build` as given in the installation instructions, you need to run `source install/local_setup.bash`
 
@@ -129,7 +129,7 @@ Definition Language (PDDL). Thus, a flight mission can be automatically generate
  - for each area, the centroid is calculated. All the areas are mapped to their corresponding centroid in a json file. Also, a PDDL problem file can be automatically generated from this data. The json file is given as an input to UPF4ROS, so the symbolic arguments (areas) can be mapped to continuous data (coordinates of centroid)
 
 ### Setup of the Validation and Visualization Component
-The first module that will be installed is the flight control software PX4 and the ROS2 Bridge. General installation instructions can be found here: https://docs.px4.io/v1.13/en/ros/ros2_comm.html. As we use ROS2 Foxy, you don't need to install Fast DDS (Fast-RTPS-Gen is still required).
+The first module that will be installed is the flight control software PX4 and the ROS2 Bridge. General installation instructions can be found here: https://docs.px4.io/v1.13/en/ros/ros2_comm.html. As we use ROS2 Galactic, you should follow the installation instructions for the FastDDS `rmw` implementation (https://docs.px4.io/v1.13/en/dev_setup/fast-dds-installation.html). In addition treat any mention of ROS2 'foxy' as 'galactic' instead.
 
 **_NOTE:_**  You will need to clone the latest releases (not branch 1.13) and checkout the following commits, otherwise the setup might not work:
  - for https://github.com/PX4/PX4-Autopilot.git : `git checkout 30e2490d5b50c0365052e00d53777b1f4068deab`
