@@ -112,7 +112,7 @@ public:
 		GPS_converter_ = std::make_shared<GeodeticConverter>(48.0260, 11.8725);
 		
 		
-		//get content from listeners
+		// get content from listeners
 		battery_listener_ = battery_listener; //->recent_msg->timestamp;
 		gps_listener_ = gps_listener; //->recent_gps_msg->timestamp;
 
@@ -239,12 +239,12 @@ private:
 
 		auto pose_cmd = goal_handle->get_goal()->pose.pose;
 
-		//RCLCPP_INFO(this->get_logger(), "Starting navigation to %lf, %lf, %lf", pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z);
+		// RCLCPP_INFO(this->get_logger(), "Starting navigation to %lf, %lf, %lf", pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z);
 		
 		rclcpp::Rate loop_rate(1);
 		
-		//use Feedback after setting gps home position to send it to action client (pddl planner)
-		//auto feedback = std::make_shared<NavigateToPose::Feedback>();
+		// use Feedback after setting gps home position to send it to action client (pddl planner)
+		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
 		auto result = std::make_shared<NavigateToPose::Result>();
 		
 		publish_offboard_control_mode();
@@ -260,10 +260,10 @@ private:
 			current_times++;
 			RCLCPP_INFO(this->get_logger(), "publishing setpoint number %d ", current_times);
 			
-			//NED frame doesnt reset once reaching a waypoint
+			// NED frame doesnt reset once reaching a waypoint
 			distance = move_to_gps(pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z);
 			
-			//print remaining distance
+			// print remaining distance
 			RCLCPP_INFO(this->get_logger(), "current distance: %lf ", distance);
 			
 			if (goal_handle->is_canceling()) {
@@ -288,8 +288,8 @@ private:
 		
 		rclcpp::Rate loop_rate(1);
 		
-		//use Feedback after setting gps home position to send it to action client (pddl planner)
-		//auto feedback = std::make_shared<NavigateToPose::Feedback>();
+		// use Feedback after setting gps home position to send it to action client (pddl planner)
+		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
 		auto result = std::make_shared<NavigateToPose::Result>();
 		
 		// set home gps origin for reference when receiving takeoff command
@@ -327,8 +327,8 @@ private:
 		
 		rclcpp::Rate loop_rate(1);
 		
-		//use Feedback after setting gps home position to send it to action client (pddl planner)
-		//auto feedback = std::make_shared<NavigateToPose::Feedback>();
+		// use Feedback after setting gps home position to send it to action client (pddl planner)
+		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
 		auto result = std::make_shared<NavigateToPose::Result>();
 		
 		
@@ -356,7 +356,7 @@ private:
 		publish_offboard_control_mode();
 		if(is_flying_){
 			this->land();
-			//this->disarm(); <-- not neccessary after land, it disarms automatically
+			// this->disarm(); <-- not neccessary after land, it disarms automatically
 		}
 		while (rclcpp::ok()) {
 			loop_rate.sleep();
@@ -471,21 +471,21 @@ private:
 	 *        while moving towards the target, dont decrease the distances, the target NED trajectory point should stay constant
 	 */
 	double OffboardControl::move_to_gps(double latitude, double longitude, double altitude) const{
-		//NED Coordinates for target
+		// NED Coordinates for target
 		double north, east, down;
 		GPS_converter_->geodetic2Ned(latitude, longitude, altitude, &north, &east, &down);
 		
-		//Current NED coordinates relative to origin 
-		//changed from calculating via geodetic_utils to listening from PX4
+		// Current NED coordinates relative to origin 
+		// changed from calculating via geodetic_utils to listening from PX4
 		double current_north, current_east, current_down;
 		
-		// receive ncurrent NED coordinates from PX4
+		// receive current NED coordinates from PX4
 		current_north = gps_listener_->recent_ned_msg->x;
 		current_east = gps_listener_->recent_ned_msg->y;
 		current_down = gps_listener_->recent_ned_msg->z;
 		
 		double delta_n = north - current_north, delta_e = east - current_east, delta_d = down - current_down;
-		//discretize delta values
+		// discretize delta values
 		delta_n = GPS_converter_->discretize(delta_n,5);
 		delta_e = GPS_converter_->discretize(delta_e,5);
 		delta_d = GPS_converter_->discretize(delta_d,5);
@@ -498,8 +498,8 @@ private:
 		
 		TrajectorySetpoint msg{};
 		msg.timestamp = timestamp_.load();
-		//waypoints can have a maximum of 900m distance (according to official px4 documentation)
-		//smoothing by discretizing points
+		// waypoints can have a maximum of 900m distance (according to official px4 documentation)
+		// smoothing by discretizing points
 		north = GPS_converter_->discretize(north,5);
 		east = GPS_converter_->discretize(east,5);
 		down = GPS_converter_->discretize(down,5);
