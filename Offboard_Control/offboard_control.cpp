@@ -36,6 +36,7 @@
  * @addtogroup examples
  * @author Mickey Cowden <info@cowden.tech>
  * @author Nuno Marques <nuno.marques@dronesolutions.io>
+ * @author Lucas Mair	<lucas.mair@unibw.de>
 
  * The TrajectorySetpoint message and the OFFBOARD mode in general are under an ongoing update.
  * Please refer to PR: https://github.com/PX4/PX4-Autopilot/pull/16739 for more info. 
@@ -76,7 +77,6 @@
 using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace px4_msgs::msg;
-//using namespace px4_ros_com::listeners;
 
 using NavigateToPose = nav2_msgs::action::NavigateToPose;
 using GoalHandleNavigateToPose = rclcpp_action::ServerGoalHandle<NavigateToPose>;
@@ -108,12 +108,8 @@ public:
 
 		name_prefix_ = name_prefix;
 		
-		//GPS Conversion test
 		// given GPS coordinates are dummy numbers for initialization, actual Home position is set automatically in takeoff (based on settings.json)
 		GPS_converter_ = std::make_shared<GeodeticConverter>(48.0260, 11.8725);
-		//double north, east, down;
-		//GPS_converter_->geodetic2Ned(48.0260, 11.8725, 5, &north, &east, &down);
-		//RCLCPP_INFO(get_logger(), "Calculated NED Koordinates are: %lf, %lf, %lf", north, east, down);
 		
 		
 		//get content from listeners
@@ -132,36 +128,6 @@ public:
 
 			publish_offboard_control_mode();
 			
-			/*
-			if (offboard_setpoint_counter_ < 1) {
-				std::cout << "In main_loop \n";
-				
-				//next line from nav2_sim_node
-				// the reason for error if in constructor, is that the Node is not fully instantiated yet, so it should work after the constructor but before spinning the nodes
-				//start_server(); //<-- has been tested, has to be started (here) after constructor finished otherwise it throws an error (bad_weak_pointer)
-				
-				offboard_setpoint_counter_++;
-			}
-			
-			//RCLCPP_INFO(get_logger(), "Publishing OffboardControlMode messages");
-			
-			/*if (offboard_setpoint_counter_ == 10) {
-				// Change to Offboard mode after 10 setpoints
-				this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
-
-				// Arm the vehicle
-				this->arm();
-			}
-
-            // offboard_control_mode needs to be paired with trajectory_setpoint
-			publish_offboard_control_mode();
-			publish_trajectory_setpoint();
-
-           		 // stop the counter after reaching 11
-			if (offboard_setpoint_counter_ < 11) {
-				offboard_setpoint_counter_++;
-			}
-			*/
 		};
 		timer_ = this->create_wall_timer(200ms, timer_callback);
 	}
@@ -229,61 +195,50 @@ private:
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0, float param3 = 0.0, float param4 = 0.0, float param5 = 0.0, float param6 = 0.0, float param7 = 0.0) const;
 	
 	
-	// the following functions were copied from ~\companion\PlanSys\src\plansys2_bt_example\src\nav2_sim_node.cpp
+	// the following functions were derived from ~\companion\PlanSys\src\plansys2_bt_example\src\nav2_sim_node.cpp
 	rclcpp_action::GoalResponse handle_goal_waypoint(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
 		std::cout << "In handle_goal_waypoint \n";
-		//RCLCPP_INFO(get_logger(), "In handle_goal_waypoint");
 		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 	}
 	
 	rclcpp_action::GoalResponse handle_goal_takeoff(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
 		std::cout << "In handle_goal_takeoff \n";
-		//RCLCPP_INFO(get_logger(), "In handle_goal_takeoff");
 		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 	}
 	
 	rclcpp_action::GoalResponse handle_goal_landing(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
 		std::cout << "In handle_goal_landing \n";
-		//RCLCPP_INFO(get_logger(), "In handle_goal_landing");
 		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 	}
 	
 	rclcpp_action::CancelResponse handle_cancel( const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		std::cout << "In handle_cancel \n";
-		//RCLCPP_INFO(get_logger(), "Received request to cancel goal");
 		return rclcpp_action::CancelResponse::ACCEPT;
 	}
 
 	void handle_accepted_waypoint(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_waypoint \n";
-		//RCLCPP_INFO(get_logger(), "In handle_accepted");
 		std::thread{std::bind(&OffboardControl::execute_waypoint, this, _1), goal_handle}.detach();
 	}
 	
 	void handle_accepted_takeoff(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_takeoff \n";
-		//RCLCPP_INFO(get_logger(), "In handle_accepted");
 		std::thread{std::bind(&OffboardControl::execute_takeoff, this, _1), goal_handle}.detach();
 	}
 	
 	void handle_accepted_landing(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_landing \n";
-		//RCLCPP_INFO(get_logger(), "In handle_accepted");
 		std::thread{std::bind(&OffboardControl::execute_landing, this, _1), goal_handle}.detach();
 	}
 
 	void execute_waypoint(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		std::cout << "In execute_waypoint \n";
-		//RCLCPP_INFO(get_logger(), "In execute");
 
 		auto pose_cmd = goal_handle->get_goal()->pose.pose;
-		//tf2::Quaternion q;
-		//tf2::fromMsg(pose_cmd.orientation, q);
 
-		//RCLCPP_INFO(this->get_logger(), "Starting navigation to %lf, %lf, %lf, %lf", pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z, q.getAngle());
 		//RCLCPP_INFO(this->get_logger(), "Starting navigation to %lf, %lf, %lf", pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z);
 		
 		rclcpp::Rate loop_rate(1);
@@ -304,8 +259,6 @@ private:
 			loop_rate.sleep();
 			current_times++;
 			RCLCPP_INFO(this->get_logger(), "publishing setpoint number %d ", current_times);
-			
-			//RCLCPP_INFO(this->get_logger(), "Current GPS position: %lf, %lf, %lf", gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, gps_listener_->recent_gps_msg->alt);
 			
 			//NED frame doesnt reset once reaching a waypoint
 			distance = move_to_gps(pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z);
@@ -525,11 +478,8 @@ private:
 		//Current NED coordinates relative to origin 
 		//changed from calculating via geodetic_utils to listening from PX4
 		double current_north, current_east, current_down;
-		// old calculation
-		//GPS_converter_->geodetic2Ned(gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, gps_listener_->recent_gps_msg->alt, 
-		//								&current_north, &current_east, &current_down);
 		
-		//new receive from PX4
+		// receive ncurrent NED coordinates from PX4
 		current_north = gps_listener_->recent_ned_msg->x;
 		current_east = gps_listener_->recent_ned_msg->y;
 		current_down = gps_listener_->recent_ned_msg->z;
@@ -544,14 +494,12 @@ private:
 		RCLCPP_INFO(this->get_logger(), "Target GPS position: %lf, %lf, %lf", latitude, longitude, altitude);
 		RCLCPP_INFO(this->get_logger(), "Current position in NED frame: %lf, %lf, %lf", current_north, current_east, current_down);
 		RCLCPP_INFO(this->get_logger(), "Target position in NED frame: %lf, %lf, %lf", north, east, down);
-		//NED frame doesnt reset once reaching a waypoint
-		//RCLCPP_INFO(this->get_logger(), "Set trajectory point to relative NED coordinates: %lf, %lf, %lf", delta_n, delta_e, delta_d);
+
 		
 		TrajectorySetpoint msg{};
 		msg.timestamp = timestamp_.load();
-		//waypoints can have a maximum of 900m distance
+		//waypoints can have a maximum of 900m distance (according to official px4 documentation)
 		//smoothing by discretizing points
-		//changed from delta values to absolute target values
 		north = GPS_converter_->discretize(north,5);
 		east = GPS_converter_->discretize(east,5);
 		down = GPS_converter_->discretize(down,5);
@@ -562,7 +510,6 @@ private:
 		publish_offboard_control_mode();
 		trajectory_setpoint_publisher_->publish(msg);
 		
-		//returns current distance to target therefore you need to use delta values
 		return GPS_converter_->getDistance(delta_n, delta_e, delta_d);
 	}
 
@@ -613,15 +560,12 @@ int main(int argc, char* argv[]) {
 	if(argv[1]!=NULL && strcmp(argv[1],"--ros-args")!=0){
 		name_prefix = argv[1];
 	}
-	//std::cout << "name_prefix is: " << name_prefix << std::endl;
-	
-	//std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	
 	auto battery_listener = std::make_shared<BatteryStatusListener>(name_prefix);
 	auto gps_listener = std::make_shared<VehicleGlobalPositionListener>(name_prefix);
 	auto controller = std::make_shared<OffboardControl>(battery_listener, gps_listener, name_prefix);
 	
-	controller -> start_server(); // <-- this works
+	controller -> start_server();
 	
 	rclcpp::executors::SingleThreadedExecutor executor;
 
@@ -629,8 +573,6 @@ int main(int argc, char* argv[]) {
 	executor.add_node(gps_listener);
 	executor.add_node(controller);
 	executor.spin();
-	
-	//rclcpp::spin(controller);
 
 	rclcpp::shutdown();
 	return 0;
