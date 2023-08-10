@@ -49,6 +49,8 @@
 // following import is for communication with Plansys2 and based on action model
 // see ROS2 tutorial under https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions/Understanding-ROS2-Actions.html
 #include "nav2_msgs/action/navigate_to_pose.hpp"
+#include "nav2_msgs/action/navigate_through_poses.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
 // following include is for transforming gps to NED coordinates
@@ -78,9 +80,18 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace px4_msgs::msg;
 
+using PoseStamped = geometry_msgs::msg::PoseStamped;
 using NavigateToPose = nav2_msgs::action::NavigateToPose;
+using NavigateThroughPoses = nav2_msgs::action::NavigateThroughPoses;
 using GoalHandleNavigateToPose = rclcpp_action::ServerGoalHandle<NavigateToPose>;
+using GoalHandleNavigateThroughPoses = rclcpp_action::ServerGoalHandle<NavigateThroughPoses>;
 
+
+// utility functions
+// Declare str2int() before it is used
+constexpr unsigned int str2int(const char* str, int h = 0){
+	return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
+}
 
 class OffboardControl : public rclcpp::Node {
 public:
@@ -123,7 +134,6 @@ public:
 					timestamp_.store(msg->timestamp);
 				});
 		
-		offboard_setpoint_counter_ = 0;
 		auto timer_callback = [this]() -> void {
 
 			publish_offboard_control_mode();
@@ -140,25 +150,32 @@ public:
 		waypoint_action_server_ = rclcpp_action::create_server<NavigateToPose>(
 			shared_from_this(),
 			name_prefix_ + "navigate_to_pose",
-			std::bind(&OffboardControl::handle_goal_waypoint, this, _1, _2),
-			std::bind(&OffboardControl::handle_cancel, this, _1),
+			std::bind(&OffboardControl::handle_goal_single_action, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel_single_action, this, _1),
 			std::bind(&OffboardControl::handle_accepted_waypoint, this, _1));
 			
 		takeoff_action_server_ = rclcpp_action::create_server<NavigateToPose>(
 			shared_from_this(),
 			name_prefix_ + "takeoff",
-			std::bind(&OffboardControl::handle_goal_takeoff, this, _1, _2),
-			std::bind(&OffboardControl::handle_cancel, this, _1),
+			std::bind(&OffboardControl::handle_goal_single_action, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel_single_action, this, _1),
 			std::bind(&OffboardControl::handle_accepted_takeoff, this, _1));
 			
 		landing_action_server_ = rclcpp_action::create_server<NavigateToPose>(
 			shared_from_this(),
 			name_prefix_ + "landing",
-			std::bind(&OffboardControl::handle_goal_landing, this, _1, _2),
-			std::bind(&OffboardControl::handle_cancel, this, _1),
+			std::bind(&OffboardControl::handle_goal_single_action, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel_single_action, this, _1),
 			std::bind(&OffboardControl::handle_accepted_landing, this, _1));
+		
+		sequence_action_server_ = rclcpp_action::create_server<NavigateThroughPoses>(
+			shared_from_this(),
+			name_prefix_ + "action_sequence",
+			std::bind(&OffboardControl::handle_goal_sequence, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel_sequence, this, _1),
+			std::bind(&OffboardControl::handle_accepted_sequence, this, _1));
 
-			RCLCPP_INFO(get_logger(), "Ready. \n");
+			RCLCPP_INFO(get_logger(), "Action servers are ready. \n");
 	}
 
 	void arm() const;
@@ -166,10 +183,12 @@ public:
 
 private:
 
+	enum RETURN_VALUE { action_failure = -1, action_completed = 0, goal_succeeded = 4, goal_canceled = 5};
+
 	rclcpp_action::Server<NavigateToPose>::SharedPtr waypoint_action_server_;
 	rclcpp_action::Server<NavigateToPose>::SharedPtr takeoff_action_server_;
 	rclcpp_action::Server<NavigateToPose>::SharedPtr landing_action_server_;
-	NavigateToPose::Goal current_goal_;
+	rclcpp_action::Server<NavigateThroughPoses>::SharedPtr sequence_action_server_;
 
 	rclcpp::TimerBase::SharedPtr timer_;
 	
@@ -182,9 +201,9 @@ private:
 
 	std::atomic<uint64_t> timestamp_;   //!< common synced timestamped
 
-	uint64_t offboard_setpoint_counter_;   //!< counter for the number of setpoints sent
 	bool is_flying_ = false; //!< boolean for checking if the drone needs to arm and takeoff
 	std::string name_prefix_;
+
 
 	void takeoff();
 	void land(double latitude = 0.0, double longitude = 0.0, double altitude = 0.0);
@@ -193,51 +212,122 @@ private:
 	void publish_trajectory_setpoint() const;
 	void hover_in_position() const;
 	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0, float param3 = 0.0, float param4 = 0.0, float param5 = 0.0, float param6 = 0.0, float param7 = 0.0) const;
-	
+
 	
 	// the following functions were derived from ~\companion\PlanSys\src\plansys2_bt_example\src\nav2_sim_node.cpp
-	rclcpp_action::GoalResponse handle_goal_waypoint(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
-		std::cout << "In handle_goal_waypoint \n";
+	rclcpp_action::GoalResponse handle_goal_single_action(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
+		std::cout << "In handle_goal_single_action \n";
 		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 	}
 	
-	rclcpp_action::GoalResponse handle_goal_takeoff(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
-		std::cout << "In handle_goal_takeoff \n";
+	rclcpp_action::GoalResponse handle_goal_sequence(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateThroughPoses::Goal> goal){
+		std::cout << "In handle_goal_sequence \n";
 		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 	}
 	
-	rclcpp_action::GoalResponse handle_goal_landing(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
-		std::cout << "In handle_goal_landing \n";
-		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+	rclcpp_action::CancelResponse handle_cancel_single_action( const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
+		std::cout << "In handle_cancel_single_action \n";
+		return rclcpp_action::CancelResponse::ACCEPT;
 	}
 	
-	rclcpp_action::CancelResponse handle_cancel( const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
-		std::cout << "In handle_cancel \n";
+	rclcpp_action::CancelResponse handle_cancel_sequence( const std::shared_ptr<GoalHandleNavigateThroughPoses> goal_handle){
+		std::cout << "In handle_cancel_sequence \n";
 		return rclcpp_action::CancelResponse::ACCEPT;
 	}
 
 	void handle_accepted_waypoint(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_waypoint \n";
-		std::thread{std::bind(&OffboardControl::execute_waypoint, this, _1), goal_handle}.detach();
+		std::thread{std::bind(&OffboardControl::execute_waypoint<NavigateToPose>, this, _1, goal_handle->get_goal()->pose, true), goal_handle}.detach();
 	}
 	
 	void handle_accepted_takeoff(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_takeoff \n";
-		std::thread{std::bind(&OffboardControl::execute_takeoff, this, _1), goal_handle}.detach();
+		std::thread{std::bind(&OffboardControl::execute_takeoff<NavigateToPose>, this, _1, true), goal_handle}.detach();
 	}
 	
 	void handle_accepted_landing(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_landing \n";
-		std::thread{std::bind(&OffboardControl::execute_landing, this, _1), goal_handle}.detach();
+		std::thread{std::bind(&OffboardControl::execute_landing<NavigateToPose>, this, _1, true), goal_handle}.detach();
+	}
+	
+	void handle_accepted_sequence(const std::shared_ptr<GoalHandleNavigateThroughPoses> goal_handle){
+		using namespace std::placeholders;
+		std::cout << "In handle_accepted_sequence \n";
+		std::thread{std::bind(&OffboardControl::execute_sequence, this, _1), goal_handle}.detach();
+	}
+	
+	void execute_sequence(const std::shared_ptr<GoalHandleNavigateThroughPoses> goal_handle){
+		//depending on action call execute waypoint, execute_takeoff or execute_landing
+		//check if goal_handle during called subfunction was canceled
+		
+		auto poses = goal_handle->get_goal()->poses;
+		std::string sequence = goal_handle->get_goal()->behavior_tree;
+		
+		//split comma separated behavior_tree string into string vector
+		std::istringstream oss(sequence);
+		std::string word;
+		std::vector<std::string> vtr;
+		while(getline(oss, word, ',')) {
+			vtr.push_back(word);
+		}
+		
+		int current_pose_index = 0;
+		int current_action_index = 0;
+		int return_code = -1;
+		
+		for ( auto it = vtr.begin(); it != vtr.end(); ++it) {
+			bool last_action = std::next(it) == vtr.end();
+			
+			std::cout << "current action in sequence["<< current_action_index <<"]: " << *it << std::endl;
+			
+			
+			
+			//use lambda functions to have inline string literals as constexpr to use for str2int
+			switch (str2int(it->c_str())) {
+				case []{ return str2int("take_off"); }():
+					return_code = execute_takeoff<NavigateThroughPoses>(goal_handle,last_action);
+					break;
+				case []{ return str2int("land"); }():
+					return_code = execute_landing<NavigateThroughPoses>(goal_handle,last_action);
+					break;
+				case []{ return str2int("fly"); }():
+					return_code = execute_waypoint<NavigateThroughPoses>(goal_handle, poses[current_pose_index], last_action);
+					current_pose_index++;
+					break;
+			}
+			
+			switch (return_code) {
+				case OffboardControl::RETURN_VALUE::action_completed:
+					//single action in sequence completed
+					current_action_index++;
+					RCLCPP_INFO(this->get_logger(), "Action %d out of %ld successfully completed", current_action_index, vtr.size());
+					break;
+				case OffboardControl::RETURN_VALUE::goal_succeeded:
+					//entire sequence succeeded handling
+					current_action_index++;
+					RCLCPP_INFO(this->get_logger(), "Action %d out of %ld in sequence successfully completed", current_action_index, vtr.size());
+					RCLCPP_INFO(this->get_logger(), "Sequence successfully completed");
+					break;
+				case OffboardControl::RETURN_VALUE::goal_canceled:
+					//sequence canceled handling
+					RCLCPP_INFO(this->get_logger(), "Sequence cancelled during action %d out of %ld",(current_action_index+1), vtr.size());
+					RCLCPP_INFO(this->get_logger(), "Successfully completed %d actions of the sequence",(current_action_index+1));
+					break;
+			}
+		}
+		return;
 	}
 
-	void execute_waypoint(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
+	// T should be of type rclcpp_action::ServerGoalHandle<ActionT>
+	template<typename ActionT>
+	int execute_waypoint(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle, PoseStamped pose, bool final_action = false){
 		std::cout << "In execute_waypoint \n";
 
-		auto pose_cmd = goal_handle->get_goal()->pose.pose;
+		//auto pose_cmd = goal_handle->get_goal()->pose.pose;
+		auto pose_cmd = pose.pose;
 
 		// RCLCPP_INFO(this->get_logger(), "Starting navigation to %lf, %lf, %lf", pose_cmd.position.x, pose_cmd.position.y, pose_cmd.position.z);
 		
@@ -245,16 +335,14 @@ private:
 		
 		// use Feedback after setting gps home position to send it to action client (pddl planner)
 		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
-		auto result = std::make_shared<NavigateToPose::Result>();
+		auto result = std::make_shared<typename ActionT::Result>();
 		
 		publish_offboard_control_mode();
 		this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
-		double recent_target_lat, recent_target_lon, recent_target_alt;
 		
 		double distance = 0;
 		
 		int current_times = 0;
-		int waypoints = 0;
 		while (rclcpp::ok()) {
 			loop_rate.sleep();
 			current_times++;
@@ -266,31 +354,39 @@ private:
 			// print remaining distance
 			RCLCPP_INFO(this->get_logger(), "current distance: %lf ", distance);
 			
+			// set result to canceled; if part of an action sequence, check separately in calling funtion if canceled from within here
 			if (goal_handle->is_canceling()) {
 				this->hover_in_position();
 				goal_handle->canceled(result);
-				RCLCPP_INFO(this->get_logger(), "Action Canceled");
-				return;
+				RCLCPP_INFO(this->get_logger(), "Navigation to current waypoint canceled");
+				return OffboardControl::RETURN_VALUE::goal_canceled;
 			}
 			
 			// normally distance <= 5
 			if (rclcpp::ok() && distance <= 5) {
 				loop_rate.sleep();
-				goal_handle->succeed(result);
-				RCLCPP_INFO(this->get_logger(), "Navigation Succeeded");
+				RCLCPP_INFO(this->get_logger(), "Navigation to current waypoint succeeded");
+				if(final_action){
+					goal_handle->succeed(result);
+					return OffboardControl::RETURN_VALUE::goal_succeeded;
+				}
 				break;
 			}
 		}
+		// check in calling function if successfull
+		return OffboardControl::RETURN_VALUE::action_completed;
 	}
 	
-	void execute_takeoff(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
+	// T should be of type rclcpp_action::ServerGoalHandle<ActionT>
+	template<typename ActionT>
+	int execute_takeoff(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle, bool final_action = false){
 		std::cout << "In execute_takeoff \n";
 		
 		rclcpp::Rate loop_rate(1);
 		
 		// use Feedback after setting gps home position to send it to action client (pddl planner)
 		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
-		auto result = std::make_shared<NavigateToPose::Result>();
+		auto result = std::make_shared<typename ActionT::Result>();
 		
 		// set home gps origin for reference when receiving takeoff command
 		GPS_converter_ = std::make_shared<GeodeticConverter>(gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon);
@@ -304,8 +400,8 @@ private:
 			if (goal_handle->is_canceling()) {
 				this->disarm();
 				goal_handle->canceled(result);
-				RCLCPP_INFO(this->get_logger(), "Action Canceled");
-				return;
+				RCLCPP_INFO(this->get_logger(), "Takeoff canceled");
+				return OffboardControl::RETURN_VALUE::goal_canceled;
 			}
 			this->takeoff();
 		}
@@ -315,21 +411,27 @@ private:
 			
 			if (rclcpp::ok() && gps_listener_->recent_gps_msg->alt > 5) {
 				loop_rate.sleep();
-				goal_handle->succeed(result);
-				RCLCPP_INFO(this->get_logger(), "Takeoff Succeeded");
+				if(final_action){
+					goal_handle->succeed(result);
+					return OffboardControl::RETURN_VALUE::goal_succeeded;
+				}
+				RCLCPP_INFO(this->get_logger(), "Takeoff succeeded");
 				break;
 			}
 		}
+		return OffboardControl::RETURN_VALUE::action_completed;
 	}
 	
-	void execute_landing(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
+	// T should be of type rclcpp_action::ServerGoalHandle<ActionT>
+	template<typename ActionT>
+	int execute_landing(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle, bool final_action){
 		std::cout << "In execute_landing \n";
 		
 		rclcpp::Rate loop_rate(1);
 		
 		// use Feedback after setting gps home position to send it to action client (pddl planner)
 		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
-		auto result = std::make_shared<NavigateToPose::Result>();
+		auto result = std::make_shared<typename ActionT::Result>();
 		
 		
 		double home_lat, home_lon, home_alt;
@@ -341,8 +443,8 @@ private:
 			if (goal_handle->is_canceling()) {
 				this->hover_in_position();
 				goal_handle->canceled(result);
-				RCLCPP_INFO(this->get_logger(), "Action Canceled");
-				return;
+				RCLCPP_INFO(this->get_logger(), "Landing canceled");
+				return OffboardControl::RETURN_VALUE::goal_canceled;
 			}
 			
 			loop_rate.sleep();
@@ -362,14 +464,18 @@ private:
 			loop_rate.sleep();
 			if (rclcpp::ok() && gps_listener_->recent_gps_msg->alt < 5) {
 				loop_rate.sleep();
-				goal_handle->succeed(result);
-				RCLCPP_INFO(this->get_logger(), "Landing Succeeded");
+				if(final_action){
+					goal_handle->succeed(result);
+					return OffboardControl::RETURN_VALUE::goal_succeeded;
+				}
+				RCLCPP_INFO(this->get_logger(), "Landing succeeded");
 				break;
 			}
 		}
+		return OffboardControl::RETURN_VALUE::action_completed;
 	}
 };
-
+	
 	/**
 	 * @brief Send a command to the vehicle to take off 10 meters
 	 */
