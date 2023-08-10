@@ -12,35 +12,38 @@ export FASTRTPSGEN_DIR="/usr/local/bin/"
 # ignore setuptools warning for ros2
 export PYTHONWARNINGS="ignore:setup.py install is deprecated,ignore:easy_install command is deprecated"
 
+
 # setting for avoiding gui errors:
-# unset XDG_RUNTIME_DIR
+unset XDG_RUNTIME_DIR
 
-#alias start_px4='cd ~/PX4-Autopilot; make px4_sitl_default none_iris'
 alias start_px4='cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris'
-alias start_px4_multiple='~/PX4-Autopilot/Tools/sitl_multiple_run.sh 3'
-
-alias start_rtps_holy='cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris_mod'
+alias start_px4_multiple='sleep 1; ~/PX4-Autopilot/Tools/sitl_multiple_run.sh 3'
 
 alias start_rtps_agent='micrortps_agent -t UDP'
-alias start_rtps_multiple='sleep 1; ~/PX4-Autopilot/multi_drone_scripts/run_multiple_ros2_bridges.sh 3'
+alias start_rtps_multiple='~/PX4-Autopilot/multi_drone_scripts/run_multiple_ros2_bridges.sh 3'
 alias rebuild_agent='cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build_ros2_workspace.bash; cd ~'
 
-alias start_offboard_control='cd ~/px4_ros_com_ros2;sleep 2; ros2 run px4_ros_com offboard_control'
+#alias start_offboard_control='cd ~/px4_ros_com_ros2;sleep 2; ros2 run px4_ros_com offboard_control'
+# default drone count is 3 but can be set via appending "count:=4"
+alias start_offboard_control='cd ~/px4_ros_com_ros2;sleep 2; ros2 launch px4_ros_com offboard_control.launch.py'
 alias rebuild_offboard='rebuild_agent'
 
 alias start_upf4ros='cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py'
-alias start_plan_executor='cd ~/PlanSys; source install/setup.bash; sleep 6; ros2 launch upf4ros2_demo traverse_areas.launch.py'
+alias start_plan_executor='cd ~/PlanSys; source install/setup.bash; sleep 6; ros2 launch upf4ros2_demo traverse_areas.launch.py count:=1'
+alias start_plan_multi='cd ~/PlanSys; source install/setup.bash; sleep 6; ros2 launch upf4ros2_demo traverse_areas.launch.py count:=3'
+alias build_colcon='colcon build --symlink-install'
 
+# commands for high level task manager and stochastic game
 alias start_game_solve="cd ~/PlanSys; ros2 launch upf4ros2_demo roswrap.launch.py"
 alias start_pyqgis_window="cd ~/PlanSys/src/UPF4ROS2/upf4ros2_demo/upf4ros2_demo; python3 -i qgis_window.py"
 
+# commands for starting up the whole simulation pipeline
 alias start_simulation='~/start_upf_simulation.sh'
+alias start_simulation_multi='~/start_upf_simulation_multi.sh'
 
 # source ROS2 environment and also source ROS2 Bridge workspace
-alias ros_setup='source /opt/ros/foxy/setup.bash; source ~/px4_ros_com_ros2/install/setup.bash'
+alias ros_setup='source /opt/ros/galactic/setup.bash; source ~/px4_ros_com_ros2/install/setup.bash'
 ros_setup
-
-# [navigation]
 
 # cd shortcuts
 alias cd_win='cd /mnt/c'
