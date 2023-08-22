@@ -75,6 +75,11 @@ wsl --import Companion <InstallLocation> <InstallTarFile.tar>
 For more information see: https://learn.microsoft.com/en-us/windows/wsl/use-custom-distro.
 
 **_NOTE:_**  The password for the imported WSL2 is: "dronesim".
+> After importing the Tarball, execute the following commands to prevent pushing to git under wrong user name:
+```
+git config --global --unset-all user.name
+git config --global --unset-all user.email
+```
 
 The preconfigured WSL2 instance from the tarball makes use of aliases that can be edited via the custom linux alias `edit_alias` and after changing them updated via `reload_alias`.
 
