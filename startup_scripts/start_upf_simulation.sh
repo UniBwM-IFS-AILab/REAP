@@ -16,14 +16,10 @@ exec > /dev/null 2>&1
 win_path="/mnt/c/Windows/System32/"
 win_path2="C:/Users/%USERNAME%/AppData/Local/Microsoft/WindowsApps"
 
-# $win_path/cmd.exe /c $win_path2/wt.exe -p "Companion Bash" -- wsl start_rtps \; new-tab -p "Companion Bash" -- wsl start_agent \; new-tab -p "Companion Bash" -- wsl start_offboard \; new-tab -p "Companion Bash" -- wsl start_upf4ros \; new-tab -p "Companion Bash" -- wsl start_upf_demo
+wsl_profile_name="Dev_Companion"
+wsl_instance_name="Dev_Companion"
 
-# $win_path/cmd.exe /c $win_path2/wt.exe -p "Companion Bash" -- wsl bash -ic start_rtps \; new-tab -p "Companion Bash" -- wsl bash -ic start_agent \; new-tab -p "Companion Bash" -- wsl bash -ic start_offboard \; new-tab -p "Companion Bash" -- wsl bash -ic start_upf4ros \; new-tab -p "Companion Bash" -- wsl bash -ic start_upf_demo
-
-# $win_path/cmd.exe /c $win_path2/wt.exe -p "Companion Bash" -- wsl bash --rcfile ~/.bashrc -ic start_rtps \; new-tab -p "Companion Bash" -- wsl bash --rcfile ~/.bashrc -ic start_agent \; new-tab -p "Companion Bash" -- wsl bash --rcfile ~/.bashrc -ic start_offboard \; new-tab -p "Companion Bash" -- wsl bash --rcfile ~/.bashrc -ic start_upf4ros \; new-tab -p "Companion Bash" -- wsl bash --rcfile ~/.bashrc -ic start_upf_demo
-
-# $win_path/cmd.exe /c $win_path2/wt.exe -p "Companion Bash" wsl -e bash -li -c 'shopt -s expand_aliases\;start_rtps\; exec $BASH' \; new-tab -p "Companion Bash" wsl -e bash -li -c 'shopt -s expand_aliases\;start_agent\; exec $BASH' \; new-tab -p "Companion Bash" wsl -e bash -li -c 'shopt -s expand_aliases\;start_offboard\; exec $BASH' \; new-tab -p "Companion Bash" wsl -e bash -li -c 'shopt -s expand_aliases\;start_upf4ros\; exec $BASH' \; new-tab -p "Companion Bash" wsl -e bash -li -c 'shopt -s expand_aliases\;start_upf_demo\; exec $BASH'
 
 pushd /mnt/c
-$win_path/cmd.exe /c $win_path2/wt.exe -p "Companion" wsl -d Companion -e bash -li -c 'start_px4' \; new-tab -p "Companion" wsl -d Companion -e bash -li -c 'start_rtps_agent' \; new-tab -p "Companion" wsl -d Companion -e bash -li -c 'start_offboard_control' \; new-tab -p "Companion" wsl -d Companion -e bash -li -c 'start_upf4ros' \; new-tab -p "Companion" wsl -d Companion -e bash -li -c 'start_plan_executor'
+$win_path/cmd.exe /c $win_path2/wt.exe -p $wsl_profile_name wsl -d $wsl_instance_name -e bash -li -c 'start_px4' \; new-tab -p $wsl_profile_name wsl -d $wsl_instance_name -e bash -li -c 'start_rtps_agent' \; new-tab -p $wsl_profile_name wsl -d $wsl_instance_name -e bash -li -c 'start_offboard_control' \; new-tab -p $wsl_profile_name wsl -d $wsl_instance_name -e bash -li -c 'start_upf4ros' \; new-tab -p $wsl_profile_name wsl -d $wsl_instance_name -e bash -li -c 'start_plan_executor'
 popd
