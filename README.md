@@ -93,7 +93,7 @@ In addition the following lines have to be added to /etc/wsl.conf within the WSL
 [boot]
 command="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -executionpolicy bypass 'C:/<path-to-script>/wsl_static_ip.ps1'"
 ```
-To test if the powershell script works, execute `wsl --shutdown`, wait a few seconds, then restart the WSL instance. `ipconfig` should now show a second ip address for "vEthernet (WSL)". When the script gets executed, it should also print out `setting static vEthernet (WSL) ip address...` when first starting the WSL instance.
+To test if the powershell script works, execute `wsl --shutdown`, wait a few seconds, then restart the WSL instance. `ipconfig` should now show a second ip address for "vEthernet (WSL)". Sometimes you also have to open a new terminal tab before running `ipconfig` as it might have cached the previous results.
 
 If no static ip address is used, the AirSim settings.json `"LocalHostIp"` field has to be manually changed after each Windows reboot with the new WSL address.
 Additional information can be found here: https://microsoft.github.io/AirSim/px4_sitl_wsl2/.
