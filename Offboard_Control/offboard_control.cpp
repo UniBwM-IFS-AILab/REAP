@@ -266,6 +266,8 @@ private:
 		auto poses = goal_handle->get_goal()->poses;
 		std::string sequence = goal_handle->get_goal()->behavior_tree;
 		
+		auto result = std::make_shared<NavigateThroughPoses::Result>();
+		
 		//split comma separated behavior_tree string into string vector
 		std::istringstream oss(sequence);
 		std::string word;
@@ -279,7 +281,7 @@ private:
 		int return_code = -1;
 		
 		for ( auto it = vtr.begin(); it != vtr.end(); ++it) {
-			bool last_action = std::next(it) == vtr.end();
+			bool final_action = std::next(it) == vtr.end();
 			
 			std::cout << "current action in sequence["<< current_action_index <<"]: " << *it << std::endl;
 			
@@ -288,13 +290,13 @@ private:
 			//use lambda functions to have inline string literals as constexpr to use for str2int
 			switch (str2int(it->c_str())) {
 				case []{ return str2int("take_off"); }():
-					return_code = execute_takeoff<NavigateThroughPoses>(goal_handle,last_action);
+					return_code = execute_takeoff<NavigateThroughPoses>(goal_handle);
 					break;
 				case []{ return str2int("land"); }():
-					return_code = execute_landing<NavigateThroughPoses>(goal_handle,last_action);
+					return_code = execute_landing<NavigateThroughPoses>(goal_handle);
 					break;
 				case []{ return str2int("fly"); }():
-					return_code = execute_waypoint<NavigateThroughPoses>(goal_handle, poses[current_pose_index], last_action);
+					return_code = execute_waypoint<NavigateThroughPoses>(goal_handle, poses[current_pose_index]);
 					current_pose_index++;
 					break;
 			}
@@ -303,19 +305,24 @@ private:
 				case OffboardControl::RETURN_VALUE::action_completed:
 					//single action in sequence completed
 					current_action_index++;
-					RCLCPP_INFO(this->get_logger(), "Action %d out of %ld successfully completed", current_action_index, vtr.size());
+					RCLCPP_INFO(this->get_logger(), "Action %d out of %ld in sequence successfully completed", current_action_index, vtr.size());
+					if(final_action){
+						RCLCPP_INFO(this->get_logger(), "Sequence successfully completed");
+						goal_handle->succeed(result);
+					}
 					break;
 				case OffboardControl::RETURN_VALUE::goal_succeeded:
 					//entire sequence succeeded handling
-					current_action_index++;
-					RCLCPP_INFO(this->get_logger(), "Action %d out of %ld in sequence successfully completed", current_action_index, vtr.size());
-					RCLCPP_INFO(this->get_logger(), "Sequence successfully completed");
+					//instead as condition within OffboardControl::RETURN_VALUE::action_completed
 					break;
 				case OffboardControl::RETURN_VALUE::goal_canceled:
 					//sequence canceled handling
 					RCLCPP_INFO(this->get_logger(), "Sequence cancelled during action %d out of %ld",(current_action_index+1), vtr.size());
 					RCLCPP_INFO(this->get_logger(), "Successfully completed %d actions of the sequence",(current_action_index+1));
-					break;
+					//TODO: put value into canceled result with number of successfully completed actions/index of canceled action
+					//put index in result error code
+					goal_handle->canceled(result);
+					return;
 			}
 		}
 		return;
@@ -357,7 +364,9 @@ private:
 			// set result to canceled; if part of an action sequence, check separately in calling funtion if canceled from within here
 			if (goal_handle->is_canceling()) {
 				this->hover_in_position();
-				goal_handle->canceled(result);
+				if(final_action){
+					goal_handle->canceled(result);
+				}
 				RCLCPP_INFO(this->get_logger(), "Navigation to current waypoint canceled");
 				return OffboardControl::RETURN_VALUE::goal_canceled;
 			}
@@ -367,6 +376,7 @@ private:
 				loop_rate.sleep();
 				RCLCPP_INFO(this->get_logger(), "Navigation to current waypoint succeeded");
 				if(final_action){
+					RCLCPP_INFO(this->get_logger(), "in final action");
 					goal_handle->succeed(result);
 					return OffboardControl::RETURN_VALUE::goal_succeeded;
 				}
@@ -399,7 +409,9 @@ private:
 			
 			if (goal_handle->is_canceling()) {
 				this->disarm();
-				goal_handle->canceled(result);
+				if(final_action){
+					goal_handle->canceled(result);
+				}
 				RCLCPP_INFO(this->get_logger(), "Takeoff canceled");
 				return OffboardControl::RETURN_VALUE::goal_canceled;
 			}
@@ -424,7 +436,7 @@ private:
 	
 	// T should be of type rclcpp_action::ServerGoalHandle<ActionT>
 	template<typename ActionT>
-	int execute_landing(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle, bool final_action){
+	int execute_landing(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle, bool final_action = false){
 		std::cout << "In execute_landing \n";
 		
 		rclcpp::Rate loop_rate(1);
@@ -442,7 +454,9 @@ private:
 			
 			if (goal_handle->is_canceling()) {
 				this->hover_in_position();
-				goal_handle->canceled(result);
+				if(final_action){
+					goal_handle->canceled(result);
+				}
 				RCLCPP_INFO(this->get_logger(), "Landing canceled");
 				return OffboardControl::RETURN_VALUE::goal_canceled;
 			}
