@@ -101,7 +101,7 @@ Additional information can be found here: https://microsoft.github.io/AirSim/px4
 
 ### Usage
   - Start the Unreal Engine with an imported LIDAR file. Make sure to use the LIDAR file given under [Create an UE4 project with imported LIDAR files](#create-an-ue4-project-with-imported-lidar-files) so everything works out-of-the-box.
- - Start the imported WSL2 instance. In the home folder there should be a shell script called "start_upf_simulation.sh". Make sure that the name of your imported WSL2 instance matches the name in the shellscript (in our case `Companion`; if not sure, print the name with `wsl --list` in the Windows Terminal). Execute this script and the simulated drone in UE4 should take off and execute the plan. If you wish to customize the LIDAR environment and the executed plan, see [Editing the Simulation Environment](#editing-the-simulation-environment).
+ - Start the imported WSL2 instance. In the home folder there should be a shell script called "start_upf_simulation.sh". Make sure that the name of your imported WSL2 instance matches the configured name in the shellscript (in our case `Companion`; if not sure, print the name with `wsl --list` in the Windows Terminal). Execute this script and the simulated drone in UE4 should take off and execute the plan. If you wish to customize the LIDAR environment and the executed plan, see [Editing the Simulation Environment](#editing-the-simulation-environment).
 
 
 ## Manual Installation (without Tarball)
@@ -188,6 +188,8 @@ Next, copy the following files from within the `Offboard_Control` folder of this
 - `vehicle_global_position_listener_lib.cpp`
 - `GeodeticConverter.hpp`
 - replace the original `offboard_control.cpp` with the one from this repo.
+
+>**⚠ TODO** Aerostack2 Installation
 
 Finally replace the file `CMakeLists.txt` in the directory `~\px4_ros_com_ros2\src\px4_ros_com` with the modified version of this repo as well.
 Rebuild the micrortps_agent and the offboard_control (**Action Server**) via the command `cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
