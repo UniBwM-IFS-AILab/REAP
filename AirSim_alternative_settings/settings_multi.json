@@ -59,7 +59,6 @@
 		"COM_RCL_EXCEPT": 4,
                 "NAV_RCL_ACT": 0,
                 "NAV_DLL_ACT": 0,
-                "COM_OBL_ACT": 1,
                 "LPE_LAT": 48.027342,
                 "LPE_LON": 11.874431
             }
