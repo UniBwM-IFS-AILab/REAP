@@ -4,15 +4,15 @@
 
 # The simulator is expected to send to TCP port 4560+i for i in [0, N-1]
 # For example jmavsim can be run like this:
-#./Tools/jmavsim_run.sh -p 4561 -l
+#./Tools/simulation/jmavsim/jmavsim_run.sh -p 4561 -l
 
 sitl_num=2
 [ -n "$1" ] && sitl_num="$1"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-src_path="$SCRIPT_DIR/.."
+src_path="$SCRIPT_DIR/../../"
 
-build_path=${src_path}/build/px4_sitl_rtps
+build_path=${src_path}/build/px4_sitl_default
 
 echo "killing running instances"
 pkill -x px4 || true
@@ -28,8 +28,10 @@ while [ $n -lt $sitl_num ]; do
 
 	pushd "$working_dir" &>/dev/null
 	echo "starting instance $n in $(pwd)"
-	# ../bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS >out.log 2>err.log &
- 	../bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS &>/dev/null &
+ 	# ../bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS &>/dev/null &
+  	# $build_path/bin/px4 -i $n -d "$build_path/etc" >out.log 2>err.log &
+   	PX4_UXRCE_DDS_NS="vhcl$n"
+   	$build_path/bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS &>/dev/null &
 	popd &>/dev/null
 
 	n=$(($n + 1))
