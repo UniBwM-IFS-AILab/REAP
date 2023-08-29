@@ -64,7 +64,7 @@ public:
 		std::cout << "created empty initial message in battery_listener" << std::endl;
 		
 		subscription_ = this->create_subscription<px4_msgs::msg::BatteryStatus>(
-			name_prefix + "fmu/battery_status/out",
+			name_prefix + "fmu/out/battery_status",
 #ifdef ROS_DEFAULT_API
             10,
 #endif

@@ -103,18 +103,18 @@ public:
 	OffboardControl(std::shared_ptr<BatteryStatusListener> battery_listener, std::shared_ptr<VehicleGlobalPositionListener> gps_listener, std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "offboard_control") {
 #ifdef ROS_DEFAULT_API
 		offboard_control_mode_publisher_ =
-			this->create_publisher<OffboardControlMode>(name_prefix + "fmu/offboard_control_mode/in", 10);
+			this->create_publisher<OffboardControlMode>(name_prefix + "fmu/in/offboard_control_mode", 10);
 		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/trajectory_setpoint/in", 10);
+			this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/in/trajectory_setpoint", 10);
 		vehicle_command_publisher_ =
-			this->create_publisher<VehicleCommand>(name_prefix + "fmu/vehicle_command/in", 10);
+			this->create_publisher<VehicleCommand>(name_prefix + "fmu/in/vehicle_command", 10);
 #else
 		offboard_control_mode_publisher_ =
-			this->create_publisher<OffboardControlMode>(name_prefix + "fmu/offboard_control_mode/in");
+			this->create_publisher<OffboardControlMode>(name_prefix + "fmu/in/offboard_control_mode");
 		trajectory_setpoint_publisher_ =
-			this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/trajectory_setpoint/in");
+			this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/in/trajectory_setpoint");
 		vehicle_command_publisher_ =
-			this->create_publisher<VehicleCommand>(name_prefix + "fmu/vehicle_command/in");
+			this->create_publisher<VehicleCommand>(name_prefix + "fmu/in/vehicle_command");
 #endif
 
 		name_prefix_ = name_prefix;
@@ -129,7 +129,7 @@ public:
 
 		// get common timestamp
 		timesync_sub_ =
-			this->create_subscription<px4_msgs::msg::Timesync>(name_prefix + "fmu/timesync/out", 10,
+			this->create_subscription<px4_msgs::msg::Timesync>(name_prefix + "fmu/out/timesync", 10,
 				[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
 					timestamp_.store(msg->timestamp);
 				});

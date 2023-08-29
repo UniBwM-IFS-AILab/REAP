@@ -61,7 +61,7 @@ public:
 		recent_ned_msg = std::make_shared<px4_msgs::msg::VehicleOdometry>(std::move(empty_ned_msg));
 		
 		subscription_gps = this->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(
-			name_prefix + "fmu/vehicle_global_position/out",
+			name_prefix + "fmu/out/vehicle_global_position",
 #ifdef ROS_DEFAULT_API
             10,
 #endif
@@ -86,7 +86,7 @@ public:
 		
 		std::cout << "Setup local position subscriber (odometry)..." << std::endl;
 		subscription_ned = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
-			name_prefix + "fmu/vehicle_odometry/out",
+			name_prefix + "fmu/out/vehicle_odometry",
 #ifdef ROS_DEFAULT_API
             10,
 #endif
