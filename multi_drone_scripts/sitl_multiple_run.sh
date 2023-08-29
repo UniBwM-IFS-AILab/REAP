@@ -30,7 +30,7 @@ while [ $n -lt $sitl_num ]; do
 	echo "starting instance $n in $(pwd)"
  	# ../bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS &>/dev/null &
   	# $build_path/bin/px4 -i $n -d "$build_path/etc" >out.log 2>err.log &
-   	PX4_UXRCE_DDS_NS="vhcl$n"
+    	export PX4_UXRCE_DDS_NS=vhcl$n
    	$build_path/bin/px4 -i $n -d "$build_path/etc" -s etc/init.d-posix/rcS &>/dev/null &
 	popd &>/dev/null
 
