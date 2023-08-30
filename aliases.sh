@@ -23,9 +23,9 @@ alias start_px4_multiple='sleep 1; ~/PX4-Autopilot/Tools/simulation/sitl_multipl
 alias start_rtps_agent='cd Micro-XRCE-DDS-Agent/build; MicroXRCEAgent udp4 -p 8888'
 alias rebuild_agent='cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash; cd ~'
 
-#alias start_offboard_control='cd ~/px4_ros_com_ros2;sleep 2; ros2 run px4_ros_com offboard_control'
+#alias start_offboard_control='sleep 2; ros2 run px4_ros_com offboard_control'
 # default drone count is 3 but can be set via appending "count:=4"
-alias start_offboard_control='cd ~/px4_ros_com_ros2;sleep 2; ros2 launch px4_ros_com offboard_control.launch.py'
+alias start_offboard_control='sleep 2; ros2 launch px4_ros_com offboard_control.launch.py'
 alias rebuild_offboard='rebuild_agent'
 
 alias start_upf4ros='cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py'
