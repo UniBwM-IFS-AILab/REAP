@@ -16,7 +16,7 @@ export PYTHONWARNINGS="ignore:setup.py install is deprecated,ignore:easy_install
 # setting for avoiding gui errors:
 unset XDG_RUNTIME_DIR
 
-alias start_px4='cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris'
+alias start_px4='cd ~/PX4-Autopilot; make px4_sitl_default none_iris'
 # append number of drones
 alias start_px4_multiple='sleep 1; ~/PX4-Autopilot/Tools/simulation/sitl_multiple_run.sh '
 
