@@ -124,7 +124,7 @@ Follow the instructions under [Installation with Tarball](#installation-with-tar
 
 With PlanSys2 installed, we now install the **UPF4ROS2** plugin. This plugin allows usage of the Unified Planning Framework within PlanSys2. Information on the Unified Planning Framework can be found here: https://upf.readthedocs.io/en/latest/getting_started/introduction.html. Basically, it provides a Python wrapper for multiple planning engines.
 
-Clone  UPF4ROS2 from: https://github.com/OvrK12/UPF4ROS2/tree/main into \<PlanSys2 Folder\>/src/ and follow the installation instructions given under: https://github.com/OvrK12/UPF4ROS2
+Clone  UPF4ROS2 from: https://github.com/UniBwM-IFS-AILab/UPF4ROS2 into \<PlanSys2 Folder\>/src/ and follow the installation instructions given in the README.md.
 
 Lastly, we describe the integration of **shapefiles** into the planning component. Shapefiles contain geo-referenced polygons which can be used to describe geographic features of an area. In our case, we used shapefiles that describe the land use of an area (e.g. "forest", "lake", "farmland", etc.). These shapefiles can be automatically processed to generate planning problems using the Planning Domain
 Definition Language (PDDL). Thus, a flight mission can be automatically generated (e.g., “Explore all ’woods’ in an area”). For sample data, download "ATKIS® Basis-DLM - Download - Komplettdatensatz SHAPE" from https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm. The preprocessing steps for the shapefile depend, of course, on the file used and the intended use case. For reference, you can take a look at the scripts uploaded in the "**shapefile_preprocessing**" folder in this repository. The **geopandas** library allows preprocessing of geo-referenced data in Python. The general workflow is: 
@@ -134,7 +134,7 @@ Definition Language (PDDL). Thus, a flight mission can be automatically generate
  - for each area, the centroid is calculated. All the areas are mapped to their corresponding centroid in a json file. Also, a PDDL problem file can be automatically generated from this data. The json file is given as an input to UPF4ROS, so the symbolic arguments (areas) can be mapped to continuous data (coordinates of centroid)
 
 ### Setup of the Validation and Visualization Component
-The first module that will be installed is the flight control software PX4 and the ROS2 Bridge. General installation instructions can be found here: https://docs.px4.io/v1.13/en/ros/ros2_comm.html. As we use ROS2 Galactic, you should follow the installation instructions for the FastDDS `rmw` implementation (https://docs.px4.io/v1.13/en/dev_setup/fast-dds-installation.html). In addition treat any mention of ROS2 'foxy' as 'galactic' instead.
+The first module that will be installed is the flight control software PX4 and the ROS2 Bridge. General installation instructions can be found here: https://docs.px4.io/main/en/dev_setup/building_px4.html. At the time of this writing the main branch of PX4 corresponds to version 1.14. If the installation instructions differ based on the ROS2 version, use the ones for ROS2 Galactic. For testing successful installations use the following command from within the PX4-Autopilot directory: `make px4_sitl none_iris`.
 
 **_NOTE:_**  You will need to clone the latest releases (not branch 1.13) and checkout the following commits, otherwise the setup might not work:
  - for https://github.com/PX4/PX4-Autopilot.git : `git checkout 30e2490d5b50c0365052e00d53777b1f4068deab`
@@ -142,10 +142,8 @@ The first module that will be installed is the flight control software PX4 and t
  - for https://github.com/PX4/px4_msgs.git : `git checkout 7f89976091235579633935b7ccaab68b2debbe19`
 
 **Troubleshooting:** If the ["Sanity Check"](https://docs.px4.io/v1.13/en/ros/ros2_comm.html#sanity-check-the-installation) does not succeed, try some of the following fixes:
- - Add `export FASTRTPSGEN_DIR="/usr/local/bin/"` to your aliases.sh or .bashrc file.
- - `pip3 install --user -U kconfiglib empy pyros-genmsg setuptools`.
- - `sudo apt install python3-testresources python3-genmsg`.
- - Use Java JDK version 11 (`sudo update-alternatives --config java`), install version 11 if not available as choice.
+ - The PX4 "error: etc/init.d-posix/rcS: 39: [: Illegal number:" so far didn't cause problems for the REAP framework. You can probably ignore it.
+ - Using Java JDK version 11 (`sudo update-alternatives --config java`) might help, install version 11 if not available as choice.
  - We provide our aliases.sh file which might help. If you want to use it, copy its content into /etc/profile.d/aliases.sh. Normally shell scripts in that directory should be automatically sourced (from the /etc/profile executable).
 
 When the sanity check succeeds, you should be able to execute the following steps after running the Unreal Simulation in order to remotely control the drone. Execute each line in a separate terminal tab:
