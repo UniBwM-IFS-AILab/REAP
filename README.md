@@ -138,13 +138,7 @@ The first module that will be installed is the flight control software PX4 and t
 
 Next you need to install the [PX4-ROS 2/DDS Bridge] (https://docs.px4.io/main/en/middleware/uxrce_dds.html#install-standalone-from-source) in order to control the drones in the simulation via ROS2 Nodes.
 
-**_NOTE:_**  The MicroXRCEAgent of the uXRCE-DDS Bridge will only connect to PX4 if it is already connected to the UE4 AirSim simulation.
-
-**Troubleshooting:** If the ["Sanity Check"](https://docs.px4.io/v1.13/en/ros/ros2_comm.html#sanity-check-the-installation) does not succeed, try some of the following fixes:
- - The PX4 "error: etc/init.d-posix/rcS: 39: [: Illegal number:" so far didn't cause problems for the REAP framework. You can probably ignore it.
- - `apt install --user -U kconfiglib empy pyros-genmsg setuptools`
- - Using Java JDK version 11 (`sudo update-alternatives --config java`) might help, install version 11 if not available as choice.
- - We provide our aliases.sh file which might help. If you want to use it, copy its content into /etc/profile.d/aliases.sh. Normally shell scripts in that directory should be automatically sourced (from the /etc/profile executable).
+**_NOTE:_**  The MicroXRCEAgent will only connect to PX4 if it is already connected to the Unreal simulation.
 
 Finally we install the [Offboard Control](https://docs.px4.io/main/en/ros/ros2_offboard_control.html) example code so you can test you setup. After creating the workspace (e.g. `mkdir -p ~/offboard_control_ws/src/ && cd $_`) and cloning the repos, use the command `cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash` for building the workspace.
 
@@ -156,6 +150,12 @@ cd Micro-XRCE-DDS-Agent/build; MicroXRCEAgent udp4 -p 8888
 
 source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.bash; ros2 run px4_ros_com offboard_control
 ```
+
+**Troubleshooting:** If running the above steps does not succeed, try some of the following fixes:
+ - The PX4 "error: etc/init.d-posix/rcS: 39: [: Illegal number:" so far didn't cause problems for the REAP framework. You can probably ignore it.
+ - `apt install --user -U kconfiglib empy pyros-genmsg setuptools`
+ - Using Java JDK version 11 (`sudo update-alternatives --config java`) might help, install version 11 if not available as choice.
+ - We provide our aliases.sh file which might help. If you want to use it, copy its content into /etc/profile.d/aliases.sh. Normally shell scripts in that directory should be automatically sourced (from the /etc/profile executable).
 
 * * *
 
