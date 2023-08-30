@@ -134,25 +134,27 @@ Definition Language (PDDL). Thus, a flight mission can be automatically generate
  - for each area, the centroid is calculated. All the areas are mapped to their corresponding centroid in a json file. Also, a PDDL problem file can be automatically generated from this data. The json file is given as an input to UPF4ROS, so the symbolic arguments (areas) can be mapped to continuous data (coordinates of centroid)
 
 ### Setup of the Validation and Visualization Component
-The first module that will be installed is the flight control software PX4 and the ROS2 Bridge. General installation instructions can be found here: https://docs.px4.io/main/en/dev_setup/building_px4.html. At the time of this writing the main branch of PX4 corresponds to version 1.14. If the installation instructions differ based on the ROS2 version, use the ones for ROS2 Galactic. For testing successful installations use the following command from within the PX4-Autopilot directory: `make px4_sitl none_iris`.
+The first module that will be installed is the flight control software PX4 and the ROS2 Bridge. General installation instructions can be found here: https://docs.px4.io/main/en/dev_setup/building_px4.html. At the time of this writing the main branch of PX4 corresponds to version 1.14. If the installation instructions differ based on the ROS2 version, use the ones for ROS2 Galactic. For testing successful installations use the command `make px4_sitl none_iris` from within the PX4-Autopilot directory.
 
-**_NOTE:_**  You will need to clone the latest releases (not branch 1.13) and checkout the following commits, otherwise the setup might not work:
- - for https://github.com/PX4/PX4-Autopilot.git : `git checkout 30e2490d5b50c0365052e00d53777b1f4068deab`
- - for https://github.com/PX4/px4_ros_com.git : `git checkout 90538d841a383fe9631b7046096f9aa808a43121`
- - for https://github.com/PX4/px4_msgs.git : `git checkout 7f89976091235579633935b7ccaab68b2debbe19`
+Next you need to install the [PX4-ROS 2/DDS Bridge] (https://docs.px4.io/main/en/middleware/uxrce_dds.html#install-standalone-from-source) in order to control the drones in the simulation via ROS2 Nodes.
+
+**_NOTE:_**  The MicroXRCEAgent of the uXRCE-DDS Bridge will only connect to PX4 if it is already connected to the UE4 AirSim simulation.
 
 **Troubleshooting:** If the ["Sanity Check"](https://docs.px4.io/v1.13/en/ros/ros2_comm.html#sanity-check-the-installation) does not succeed, try some of the following fixes:
  - The PX4 "error: etc/init.d-posix/rcS: 39: [: Illegal number:" so far didn't cause problems for the REAP framework. You can probably ignore it.
+ - `apt install --user -U kconfiglib empy pyros-genmsg setuptools`
  - Using Java JDK version 11 (`sudo update-alternatives --config java`) might help, install version 11 if not available as choice.
  - We provide our aliases.sh file which might help. If you want to use it, copy its content into /etc/profile.d/aliases.sh. Normally shell scripts in that directory should be automatically sourced (from the /etc/profile executable).
 
-When the sanity check succeeds, you should be able to execute the following steps after running the Unreal Simulation in order to remotely control the drone. Execute each line in a separate terminal tab:
+Finally we install the [Offboard Control](https://docs.px4.io/main/en/ros/ros2_offboard_control.html) example code so you can test you setup. After creating the workspace (e.g. `mkdir -p ~/offboard_control_ws/src/ && cd $_`) and cloning the repos, use the command `cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash` for building the workspace.
+
+You should be able to execute the following steps after running the Unreal Simulation in order to remotely control the drone. Execute each line in a separate terminal tab:
 ```
-cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris
+cd ~/PX4-Autopilot; make px4_sitl_default none_iris
 
-source ~/px4_ros_com_ros2/install/setup.bash; micrortps_agent -t UDP
+cd Micro-XRCE-DDS-Agent/build; MicroXRCEAgent udp4 -p 8888
 
-cd ~/px4_ros_com_ros2; ros2 run px4_ros_com offboard_control
+source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.bash; ros2 run px4_ros_com offboard_control
 ```
 
 * * *
