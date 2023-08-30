@@ -7,8 +7,6 @@ export PX4_SIM_HOST_ADDR=172.17.208.1
 export PATH="$PATH:/home/companion/.local/bin"
 export PATH="$PATH:/home/companion/.local/lib/python3.8/site-packages"
 
-export FASTRTPSGEN_DIR="/usr/local/bin/"
-
 # ignore setuptools warning for ros2
 export PYTHONWARNINGS="ignore:setup.py install is deprecated,ignore:easy_install command is deprecated"
 
