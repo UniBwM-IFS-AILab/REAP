@@ -159,8 +159,8 @@ public:
 			RCLCPP_INFO(get_logger(), "Action servers are ready. \n");
 	}
 
-	void arm() const;
-	void disarm() const;
+	void arm();
+	void disarm();
 
 private:
 
@@ -184,11 +184,11 @@ private:
 
 	void takeoff();
 	void land(double latitude = 0.0, double longitude = 0.0, double altitude = 0.0);
-	double move_to_gps(double latitude, double longitude, double altitude) const;
-	void publish_offboard_control_mode() const;
-	void publish_trajectory_setpoint() const;
-	void hover_in_position() const;
-	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0, float param3 = 0.0, float param4 = 0.0, float param5 = 0.0, float param6 = 0.0, float param7 = 0.0) const;
+	double move_to_gps(double latitude, double longitude, double altitude);
+	void publish_offboard_control_mode();
+	void publish_trajectory_setpoint();
+	void hover_in_position();
+	void publish_vehicle_command(uint16_t command, float param1 = 0.0, float param2 = 0.0, float param3 = 0.0, float param4 = 0.0, float param5 = 0.0, float param6 = 0.0, float param7 = 0.0);
 
 	
 	// the following functions were derived from ~\companion\PlanSys\src\plansys2_bt_example\src\nav2_sim_node.cpp
@@ -494,7 +494,7 @@ private:
 	/**
 	 * @brief Send a command to Arm the vehicle
 	 */
-	void OffboardControl::arm() const {
+	void OffboardControl::arm() {
 		publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 1.0);
 
 		RCLCPP_INFO(this->get_logger(), "Arm command send");
@@ -503,7 +503,7 @@ private:
 	/**
 	 * @brief Send a command to Disarm the vehicle
 	 */
-	void OffboardControl::disarm() const {
+	void OffboardControl::disarm() {
 		publish_vehicle_command(VehicleCommand::VEHICLE_CMD_COMPONENT_ARM_DISARM, 0.0);
 
 		RCLCPP_INFO(this->get_logger(), "Disarm command send");
@@ -513,7 +513,7 @@ private:
 	 * @brief Publish the offboard control mode.
 	 *        For this example, only position and altitude controls are active.
 	 */
-	void OffboardControl::publish_offboard_control_mode() const {
+	void OffboardControl::publish_offboard_control_mode() {
 		OffboardControlMode msg{};
 		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		msg.position = true;
@@ -531,7 +531,7 @@ private:
 	 *        For this example, it sends a trajectory setpoint to make the
 	 *        vehicle hover at 5 meters with a yaw angle of 180 degrees.
 	 */
-	void OffboardControl::publish_trajectory_setpoint() const {
+	void OffboardControl::publish_trajectory_setpoint() {
 		TrajectorySetpoint msg{};
 		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		msg.position = {0.0, 0.0, -5.0};
@@ -545,7 +545,7 @@ private:
 	 *        For this example, it sends a trajectory setpoint to make the
 	 *        vehicle hover at 5 meters with a yaw angle of 180 degrees.
 	 */
-	void OffboardControl::hover_in_position() const {
+	void OffboardControl::hover_in_position() {
 		TrajectorySetpoint msg{};
 		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		
@@ -567,7 +567,7 @@ private:
 	 *        returns the distance left to the target
 	 *        while moving towards the target, dont decrease the distances, the target NED trajectory point should stay constant
 	 */
-	double OffboardControl::move_to_gps(double latitude, double longitude, double altitude) const{
+	double OffboardControl::move_to_gps(double latitude, double longitude, double altitude){
 		// NED Coordinates for target
 		double north, east, down;
 		GPS_converter_->geodetic2Ned(latitude, longitude, altitude, &north, &east, &down);
@@ -617,7 +617,7 @@ private:
 	 * @param param2    Command parameter 2
 	 */
 	void OffboardControl::publish_vehicle_command(uint16_t command, float param1,
-							  float param2, float param3, float param4, float param5, float param6, float param7) const {
+							  float param2, float param3, float param4, float param5, float param6, float param7) {
 		VehicleCommand msg{};
 		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		msg.param1 = param1;
