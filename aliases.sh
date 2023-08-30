@@ -45,7 +45,7 @@ alias start_simulation='~/start_upf_simulation.sh'
 alias start_simulation_multi='~/start_upf_simulation_multi.sh'
 
 # source ROS2 environment and also source ROS2 Bridge workspace
-alias ros_setup='source /opt/ros/galactic/setup.bash; source ~/px4_ros_com_ros2/install/setup.bash'
+alias ros_setup='source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/src/install/setup.bash'
 ros_setup
 
 # cd shortcuts
