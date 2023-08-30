@@ -59,12 +59,12 @@ public:
 		recent_gps_msg = std::make_shared<px4_msgs::msg::VehicleGlobalPosition>(std::move(empty_gps_msg));
 		px4_msgs::msg::VehicleOdometry empty_ned_msg{};
 		recent_ned_msg = std::make_shared<px4_msgs::msg::VehicleOdometry>(std::move(empty_ned_msg));
+
+		rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
+		auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 		
 		subscription_gps = this->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(
-			name_prefix + "fmu/out/vehicle_global_position",
-#ifdef ROS_DEFAULT_API
-            10,
-#endif
+			name_prefix + "fmu/out/vehicle_global_position", qos,
 			[this](const px4_msgs::msg::VehicleGlobalPosition::UniquePtr msg) {
 			/*
 			std::cout << "\n\n\n\n\n\n\n\n\n\n";
@@ -86,10 +86,7 @@ public:
 		
 		std::cout << "Setup local position subscriber (odometry)..." << std::endl;
 		subscription_ned = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
-			name_prefix + "fmu/out/vehicle_odometry",
-#ifdef ROS_DEFAULT_API
-            10,
-#endif
+			name_prefix + "fmu/out/vehicle_odometry", qos,
 			[this](const px4_msgs::msg::VehicleOdometry::UniquePtr msg) {
 			/*
 			std::cout << "\n\n\n\n\n\n\n\n\n\n";
