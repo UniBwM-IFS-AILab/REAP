@@ -551,9 +551,9 @@ private:
 		
 		double current_north, current_east, current_down;
 		
-		current_north = gps_listener_->recent_ned_msg->x;
-		current_east = gps_listener_->recent_ned_msg->y;
-		current_down = gps_listener_->recent_ned_msg->z;
+		current_north = gps_listener_->recent_ned_msg->position[0];
+		current_east = gps_listener_->recent_ned_msg->position[1];
+		current_down = gps_listener_->recent_ned_msg->position[2];
 		
 		msg.position = {current_north, current_east, current_down};
 		msg.yaw = 0; // [-PI:PI]
@@ -577,9 +577,9 @@ private:
 		double current_north, current_east, current_down;
 		
 		// receive current NED coordinates from PX4
-		current_north = gps_listener_->recent_ned_msg->x;
-		current_east = gps_listener_->recent_ned_msg->y;
-		current_down = gps_listener_->recent_ned_msg->z;
+		current_north = gps_listener_->recent_ned_msg->position[0];
+		current_east = gps_listener_->recent_ned_msg->position[1];
+		current_down = gps_listener_->recent_ned_msg->position[2];
 		
 		double delta_n = north - current_north, delta_e = east - current_east, delta_d = down - current_down;
 		// discretize delta values
