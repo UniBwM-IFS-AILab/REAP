@@ -124,15 +124,8 @@ public:
 		
 		
 		// get content from listeners
-		battery_listener_ = battery_listener; //->recent_msg->timestamp;
-		gps_listener_ = gps_listener; //->recent_gps_msg->timestamp;
-
-		// get common timestamp
-		timesync_sub_ =
-			this->create_subscription<px4_msgs::msg::Timesync>(name_prefix + "fmu/out/timesync", 10,
-				[this](const px4_msgs::msg::Timesync::UniquePtr msg) {
-					timestamp_.store(msg->timestamp);
-				});
+		battery_listener_ = battery_listener;
+		gps_listener_ = gps_listener;
 		
 		auto timer_callback = [this]() -> void {
 
@@ -197,13 +190,9 @@ private:
 	rclcpp::Publisher<OffboardControlMode>::SharedPtr offboard_control_mode_publisher_;
 	rclcpp::Publisher<TrajectorySetpoint>::SharedPtr trajectory_setpoint_publisher_;
 	rclcpp::Publisher<VehicleCommand>::SharedPtr vehicle_command_publisher_;
-	rclcpp::Subscription<px4_msgs::msg::Timesync>::SharedPtr timesync_sub_;
-
-	std::atomic<uint64_t> timestamp_;   //!< common synced timestamped
 
 	bool is_flying_ = false; //!< boolean for checking if the drone needs to arm and takeoff
 	std::string name_prefix_;
-
 
 	void takeoff();
 	void land(double latitude = 0.0, double longitude = 0.0, double altitude = 0.0);
@@ -538,7 +527,7 @@ private:
 	 */
 	void OffboardControl::publish_offboard_control_mode() const {
 		OffboardControlMode msg{};
-		msg.timestamp = timestamp_.load();
+		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		msg.position = true;
 		msg.velocity = false;
 		msg.acceleration = false;
@@ -556,7 +545,7 @@ private:
 	 */
 	void OffboardControl::publish_trajectory_setpoint() const {
 		TrajectorySetpoint msg{};
-		msg.timestamp = timestamp_.load();
+		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		msg.position = {0.0, 0.0, -5.0};
 		msg.yaw = -3.14; // [-PI:PI]
 
@@ -570,7 +559,7 @@ private:
 	 */
 	void OffboardControl::hover_in_position() const {
 		TrajectorySetpoint msg{};
-		msg.timestamp = timestamp_.load();
+		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		
 		double current_north, current_east, current_down;
 		
@@ -617,7 +606,7 @@ private:
 
 		
 		TrajectorySetpoint msg{};
-		msg.timestamp = timestamp_.load();
+		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		// waypoints can have a maximum of 900m distance (according to official px4 documentation)
 		// smoothing by discretizing points
 		north = GPS_converter_->discretize(north,5);
@@ -642,7 +631,7 @@ private:
 	void OffboardControl::publish_vehicle_command(uint16_t command, float param1,
 							  float param2, float param3, float param4, float param5, float param6, float param7) const {
 		VehicleCommand msg{};
-		msg.timestamp = timestamp_.load();
+		msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 		msg.param1 = param1;
 		msg.param2 = param2;
 		msg.param3 = param3;
