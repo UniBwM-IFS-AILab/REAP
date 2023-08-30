@@ -160,47 +160,42 @@ source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.
 * * *
 
 #### Setting up the Action Server
-The **Action Server** is based on the ["ROS 2 Offboard Control Example"](https://docs.px4.io/v1.13/en/ros/ros2_offboard_control.html) in the official PX4 documentation. If you want to make use of GPS-based drone waypoints and read out the state of battery charge, you first have to enable relevant message types by editing the file `urtps_bridge_topics.yaml` both in the PX4-Autopilot and the *px4_ros_com* package. It works as described in the "Requirements" section of the ROS 2 Offboard Control Example, but with the additional message types `battery_status` and `vehicle_global_position`. Just append the following lines at the end of the `urtps_bridge_topics.yaml` file of the PX4-Autopilot:
+The **Action Server** is based on the ["ROS2 Example Applications"](https://docs.px4.io/main/en/ros/ros2_comm.html#ros-2-example-applications) in the official PX4 documentation. If you want to read out the state of battery charge, you first have to enable relevant message types by editing the file `dds_topic.yaml` in the PX4-Autopilot as described [here](https://docs.px4.io/main/en/middleware/uxrce_dds.html#dds-topics-yaml). Just append the following lines to the publication section of the `dds_topic.yaml` file within the directory `~/PX4-Autopilot/src/modules/uxrce_dds_client`:
 
 ```
-  - msg:     battery_status
-    send:    true
-  - msg:     vehicle_global_position
-    send:    true
+  - topic: /fmu/out/battery_status
+    type: px4_msgs::msg::BatteryStatus
 ```
 
-For the `urtps_bridge_topics.yaml` of the *px4_ros_com* package you have to make similar changes, just using slightly different naming conventions (e.g. `VehicleGlobalPosition` instead of `vehicle_global_position`). Afterwards you have to make a clean rebuild of PX4-Autopilot and the *px4_ros_com* package. You might also want to add the line `source ~/px4_ros_com_ros2/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the _px4_ros_com_ros2_ workspace every time you start a new terminal tab within the WSL2 instance.
+Afterwards you have to make a clean rebuild of PX4-Autopilot. You might also want to add the line `source ~/offboard_control_ws/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the offboard_control_ws workspace every time you start a new terminal tab within the WSL2 instance.
 
->**⚠ Info** If you already enabled the message types but they still aren't listed as topics after starting the micrortps_agent, the following links might help:
->- https://github.com/PX4/px4_ros_com/issues/124
->- https://github.com/PX4/PX4-Autopilot/issues/19917#issuecomment-1201515126
->
+>**⚠ Info** If you already enabled the message types but they still aren't listed as topics after starting the MicroXRCEAgent, the following tips might help:
 >Use these commands for cleanup:
 >
->``` cd ~/PX4-Autopilot; make clean; rm -rf build/ ```
-> and
->
->``` cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source clean_all.bash ```
+>``` cd ~/PX4-Autopilot; make clean; rm -rf build ```
 
-At this point the additional topic types `BatteryStatus publisher` and `VehicleGlobalPosition publisher` should show up after starting the micrortps_agent (which corresponds to the "ROS2 Bridge" module in the system diagram).
-Next, copy the following files from within the `Offboard_Control` folder of this repo to `~\px4_ros_com_ros2\src\px4_ros_com\src\examples\offboard`:
+
+At this point the additional topic type `BatteryStatus publisher` should show up after starting the MicroXRCEAgent (which corresponds to the "ROS2 Bridge" module in the system diagram).
+Next, copy the following files from within the `Offboard_Control` folder of this repo to `~/offboard_control_ws/src/px4_ros_com/src/examples/offboard/`:
 - `battery_status_listener_lib.cpp`
 - `vehicle_global_position_listener_lib.cpp`
 - `GeodeticConverter.hpp`
 - replace the original `offboard_control.cpp` with the one from this repo.
 
+Also add the launch file `offboard_control.launch.py` to the directory `~/offboard_control_ws/src/px4_ros_com/launch/`.
+
 >**⚠ TODO** Aerostack2 Installation
 
-Finally replace the file `CMakeLists.txt` in the directory `~\px4_ros_com_ros2\src\px4_ros_com` with the modified version of this repo as well.
-Rebuild the micrortps_agent and the offboard_control (**Action Server**) via the command `cd ~/px4_ros_com_ros2/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
+Finally replace the file `CMakeLists.txt` in the directory `~/offboard_control_ws/src/px4_ros_com/` with the modified version of this repo as well.
+Rebuild offboard_control (**Action Server**) via the command `cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
 
 Now, if the AI-planning subsystem has also been setup, you should be able to run the whole framework by executing the following lines (in separate tabs) after starting the Unreal Simulation. If you are using our provided `aliases.sh` you can also just execute the shellscript `start_upf_simulation.sh` from this repo instead.
 ```
-cd ~/PX4-Autopilot; make px4_sitl_rtps none_iris
+cd ~/PX4-Autopilot; make px4_sitl_default none_iris
 
-micrortps_agent -t UDP
+cd Micro-XRCE-DDS-Agent/build; MicroXRCEAgent udp4 -p 8888
 
-cd ~/px4_ros_com_ros2; ros2 run px4_ros_com offboard_control
+source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.bash; ros2 run px4_ros_com offboard_control
 
 cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py
 
