@@ -41,12 +41,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <px4_msgs/msg/battery_status.hpp>
 
-//namespace px4_ros_com
-//{
-
-//namespace listeners
-//{
-
 /**
  * @brief Sensor Combined uORB topic data callback
  */
@@ -60,14 +54,12 @@ public:
 	explicit BatteryStatusListener(std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "battery_status_listener") {
 		px4_msgs::msg::BatteryStatus empty_msg{};
 		recent_msg = std::make_shared<px4_msgs::msg::BatteryStatus>(std::move(empty_msg));
-		
-		std::cout << "created empty initial message in battery_listener" << std::endl;
+
+		rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
+		auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 		
 		subscription_ = this->create_subscription<px4_msgs::msg::BatteryStatus>(
-			name_prefix + "fmu/out/battery_status",
-#ifdef ROS_DEFAULT_API
-            10,
-#endif
+			name_prefix + "fmu/out/battery_status", qos,
 			[this](const px4_msgs::msg::BatteryStatus::UniquePtr msg) {
 				/*
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
@@ -91,10 +83,6 @@ public:
 private:
 	rclcpp::Subscription<px4_msgs::msg::BatteryStatus>::SharedPtr subscription_;
 };
-
-//}  // namespace listeners
-
-//}  // namespace px4_ros_com
 
 /*
 int main(int argc, char *argv[]) {
