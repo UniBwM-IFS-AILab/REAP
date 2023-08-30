@@ -140,7 +140,7 @@ Next you need to install the [PX4-ROS 2/DDS Bridge](https://docs.px4.io/main/en/
 
 **_NOTE:_**  The MicroXRCEAgent will only connect to PX4 if it is already connected to the Unreal simulation.
 
-Finally we install the [Offboard Control](https://docs.px4.io/main/en/ros/ros2_offboard_control.html) example code so you can test you setup. After creating the workspace (e.g. `mkdir -p ~/offboard_control_ws/src/ && cd $_`) and cloning the repos, use the command `cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash` for building the workspace.
+Finally we install the [Offboard Control](https://docs.px4.io/main/en/ros/ros2_offboard_control.html) example code so you can test you setup. After creating the workspace (e.g. `mkdir -p ~/offboard_control_ws/src/ && cd $_`) and cloning the repos, use the command ```cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash``` for building the workspace.
 
 You should be able to execute the following steps after running the Unreal Simulation in order to remotely control the drone. Execute each line in a separate terminal tab:
 ```
