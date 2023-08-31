@@ -195,6 +195,7 @@ We use ROS2 msg types that are specifically tailored to drones from the [Aerosta
 
 **Troubleshooting:**
 - sudo apt install libgflags-dev
+- sudo apt install ignition-fortress
 
 * * *
 To finally test the complete REAP setup, replace the file `CMakeLists.txt` in the directory `~/offboard_control_ws/src/px4_ros_com/` with the modified version of this repo as well.
