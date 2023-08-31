@@ -188,9 +188,15 @@ Next, copy the following files from within the `Offboard_Control` folder of this
 
 Also add the launch file `offboard_control.launch.py` to the directory `~/offboard_control_ws/src/px4_ros_com/launch/`.
 
->**⚠ TODO** Aerostack2 Installation
+* * *
 
-Finally replace the file `CMakeLists.txt` in the directory `~/offboard_control_ws/src/px4_ros_com/` with the modified version of this repo as well.
+#### Aerostack2 Installation
+We use ROS2 msg types that are specifically tailored to drones from the [Aerostack2](https://github.com/aerostack2/aerostack2) framework. Be careful to install the main branch and not the 'galactic' one that is out of date. If you are using an EOL ubuntu distro (like we with 20.04), the rosdep update step should include the option `rosdep update --include-eol-distros`. For building we recommend to skip the gazebo-ignition packages because there are some compatibility issues with ROS2 galactic due to a major renaming. Use the command `colcon build --symlink-install --packages-skip as2_ign_gazebo_assets as2_platform_ign_gazebo`.
+
+**Troubleshooting:**
+- sudo apt install libgflags-dev
+
+To finally test the complete REAP setup, replace the file `CMakeLists.txt` in the directory `~/offboard_control_ws/src/px4_ros_com/` with the modified version of this repo as well.
 Rebuild offboard_control (**Action Server**) via the command `cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
 
 Now, if the AI-planning subsystem has also been setup, you should be able to run the whole framework by executing the following lines (in separate tabs) after starting the Unreal Simulation. If you are using our provided `aliases.sh` you can also just execute the shellscript `start_upf_simulation.sh` from this repo instead.
