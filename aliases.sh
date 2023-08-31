@@ -1,6 +1,5 @@
 # echo 'reading alias file'
 
-
 # exports
 # manually update px4_sim_host_addr when wsl started and ipconfig on windows with wsl ip address
 export PX4_SIM_HOST_ADDR=172.17.208.1
@@ -9,7 +8,6 @@ export PATH="$PATH:/home/companion/.local/lib/python3.8/site-packages"
 
 # ignore setuptools warning for ros2
 export PYTHONWARNINGS="ignore:setup.py install is deprecated,ignore:easy_install command is deprecated"
-
 
 # setting for avoiding gui errors:
 unset XDG_RUNTIME_DIR
@@ -31,8 +29,11 @@ alias start_plan_executor='cd ~/PlanSys; source install/setup.bash; sleep 6; ros
 # append count:=<number> when calling  alias start_plan_multi
 alias start_plan_multi='cd ~/PlanSys; source install/setup.bash; sleep 6; ros2 launch upf4ros2_demo traverse_areas.launch.py '
 
-# build command for Plansys
+# general build command
 alias build_colcon='colcon build --symlink-install'
+
+# build command for Aerostack2
+alias rebuild_aero='~/aerostack2_ws; colcon build --symlink-install --packages-skip as2_ign_gazebo_assets as2_platform_ign_gazebo'
 
 # commands for high level task manager and stochastic game
 alias start_game_solve="cd ~/PlanSys; ros2 launch upf4ros2_demo roswrap.launch.py"
@@ -43,7 +44,7 @@ alias start_simulation='~/start_upf_simulation.sh'
 alias start_simulation_multi='~/start_upf_simulation_multi.sh'
 
 # source ROS2 environment and also source ROS2 Bridge workspace
-alias ros_setup='source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.bash'
+alias ros_setup='source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.bash; source ~/aerostack2_ws/install/setup.bash'
 ros_setup
 
 # cd shortcuts
