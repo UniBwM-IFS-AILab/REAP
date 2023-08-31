@@ -29,6 +29,9 @@ find_package(sensor_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 
+# find aerostack2 msgs from other workspace
+find_package(as2_msgs REQUIRED)
+
 #################
 # Setup targets #
 #################
@@ -65,7 +68,7 @@ add_executable(offboard_control src/examples/offboard/offboard_control.cpp
 								src/examples/offboard/vehicle_global_position_listener_lib.cpp 
 								src/examples/offboard/battery_status_listener_lib.cpp
 								)
-ament_target_dependencies(offboard_control rclcpp px4_msgs nav2_msgs rclcpp_action Eigen3)
+ament_target_dependencies(offboard_control rclcpp px4_msgs nav2_msgs rclcpp_action Eigen3 as2_msgs)
 target_link_libraries(offboard_control Eigen3::Eigen)
 install(TARGETS offboard_control DESTINATION lib/${PROJECT_NAME})
 
