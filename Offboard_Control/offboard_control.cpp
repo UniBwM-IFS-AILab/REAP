@@ -44,8 +44,12 @@
  * of the TrajectorySetpoint message shall change.
  */
  
-// location of this file is at ~\home\companion\px4_ros_com_ros2\src\px4_ros_com\src\examples\offboard\offboard_control.cpp
+// location of this file is at ~/offboard_control_ws/src/px4_ros_com/src/examples/offboard/offboard_control.cpp
  
+// including aerostack2 msgs from other workspace (works after calling the relevant <workspace/install>/setup.bash)
+#include "as2_msgs/action/take_off.hpp"
+#include "as2_msgs/action/land.hpp"
+
 // following import is for communication with Plansys2 and based on action model
 // see ROS2 tutorial under https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions/Understanding-ROS2-Actions.html
 #include "nav2_msgs/action/navigate_to_pose.hpp"
@@ -79,11 +83,13 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace px4_msgs::msg;
 
+//aerostack2 aliases
+using TakeOff = as2_msgs::action::TakeOff;
+using Land = as2_msgs::action::Land;
+
 using PoseStamped = geometry_msgs::msg::PoseStamped;
 using NavigateToPose = nav2_msgs::action::NavigateToPose;
 using NavigateThroughPoses = nav2_msgs::action::NavigateThroughPoses;
-using GoalHandleNavigateToPose = rclcpp_action::ServerGoalHandle<NavigateToPose>;
-using GoalHandleNavigateThroughPoses = rclcpp_action::ServerGoalHandle<NavigateThroughPoses>;
 
 
 // utility functions
@@ -131,29 +137,29 @@ public:
 		waypoint_action_server_ = rclcpp_action::create_server<NavigateToPose>(
 			shared_from_this(),
 			name_prefix_ + "navigate_to_pose",
-			std::bind(&OffboardControl::handle_goal_single_action, this, _1, _2),
-			std::bind(&OffboardControl::handle_cancel_single_action, this, _1),
+			std::bind(&OffboardControl::handle_goal<NavigateToPose>, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel<NavigateToPose>, this, _1),
 			std::bind(&OffboardControl::handle_accepted_waypoint, this, _1));
 			
-		takeoff_action_server_ = rclcpp_action::create_server<NavigateToPose>(
+		takeoff_action_server_ = rclcpp_action::create_server<TakeOff>(
 			shared_from_this(),
 			name_prefix_ + "takeoff",
-			std::bind(&OffboardControl::handle_goal_single_action, this, _1, _2),
-			std::bind(&OffboardControl::handle_cancel_single_action, this, _1),
+			std::bind(&OffboardControl::handle_goal<TakeOff>, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel<TakeOff>, this, _1),
 			std::bind(&OffboardControl::handle_accepted_takeoff, this, _1));
 			
-		landing_action_server_ = rclcpp_action::create_server<NavigateToPose>(
+		landing_action_server_ = rclcpp_action::create_server<Land>(
 			shared_from_this(),
 			name_prefix_ + "landing",
-			std::bind(&OffboardControl::handle_goal_single_action, this, _1, _2),
-			std::bind(&OffboardControl::handle_cancel_single_action, this, _1),
+			std::bind(&OffboardControl::handle_goal<Land>, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel<Land>, this, _1),
 			std::bind(&OffboardControl::handle_accepted_landing, this, _1));
 		
 		sequence_action_server_ = rclcpp_action::create_server<NavigateThroughPoses>(
 			shared_from_this(),
 			name_prefix_ + "action_sequence",
-			std::bind(&OffboardControl::handle_goal_sequence, this, _1, _2),
-			std::bind(&OffboardControl::handle_cancel_sequence, this, _1),
+			std::bind(&OffboardControl::handle_goal<NavigateThroughPoses>, this, _1, _2),
+			std::bind(&OffboardControl::handle_cancel<NavigateThroughPoses>, this, _1),
 			std::bind(&OffboardControl::handle_accepted_sequence, this, _1));
 
 			RCLCPP_INFO(get_logger(), "Action servers are ready. \n");
@@ -167,8 +173,8 @@ private:
 	enum RETURN_VALUE { action_failure = -1, action_completed = 0, goal_succeeded = 4, goal_canceled = 5};
 
 	rclcpp_action::Server<NavigateToPose>::SharedPtr waypoint_action_server_;
-	rclcpp_action::Server<NavigateToPose>::SharedPtr takeoff_action_server_;
-	rclcpp_action::Server<NavigateToPose>::SharedPtr landing_action_server_;
+	rclcpp_action::Server<TakeOff>::SharedPtr takeoff_action_server_;
+	rclcpp_action::Server<Land>::SharedPtr landing_action_server_;
 	rclcpp_action::Server<NavigateThroughPoses>::SharedPtr sequence_action_server_;
 
 	rclcpp::TimerBase::SharedPtr timer_;
@@ -192,51 +198,43 @@ private:
 
 	
 	// the following functions were derived from ~\companion\PlanSys\src\plansys2_bt_example\src\nav2_sim_node.cpp
-	rclcpp_action::GoalResponse handle_goal_single_action(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateToPose::Goal> goal){
-		std::cout << "In handle_goal_single_action \n";
+	template<typename ActionT>
+	rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const typename ActionT::Goal> goal){
+		std::cout << "In handle_goal \n";
 		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 	}
 	
-	rclcpp_action::GoalResponse handle_goal_sequence(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const NavigateThroughPoses::Goal> goal){
-		std::cout << "In handle_goal_sequence \n";
-		return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-	}
-	
-	rclcpp_action::CancelResponse handle_cancel_single_action( const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
-		std::cout << "In handle_cancel_single_action \n";
-		return rclcpp_action::CancelResponse::ACCEPT;
-	}
-	
-	rclcpp_action::CancelResponse handle_cancel_sequence( const std::shared_ptr<GoalHandleNavigateThroughPoses> goal_handle){
-		std::cout << "In handle_cancel_sequence \n";
+	template<typename ActionT>
+	rclcpp_action::CancelResponse handle_cancel( const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle){
+		std::cout << "In handle_cancel \n";
 		return rclcpp_action::CancelResponse::ACCEPT;
 	}
 
-	void handle_accepted_waypoint(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
+	void handle_accepted_waypoint(const std::shared_ptr<rclcpp_action::ServerGoalHandle<NavigateToPose>> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_waypoint \n";
 		std::thread{std::bind(&OffboardControl::execute_waypoint<NavigateToPose>, this, _1, goal_handle->get_goal()->pose, true), goal_handle}.detach();
 	}
 	
-	void handle_accepted_takeoff(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
+	void handle_accepted_takeoff(const std::shared_ptr<rclcpp_action::ServerGoalHandle<TakeOff>> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_takeoff \n";
-		std::thread{std::bind(&OffboardControl::execute_takeoff<NavigateToPose>, this, _1, true), goal_handle}.detach();
+		std::thread{std::bind(&OffboardControl::execute_takeoff<TakeOff>, this, _1, true), goal_handle}.detach();
 	}
 	
-	void handle_accepted_landing(const std::shared_ptr<GoalHandleNavigateToPose> goal_handle){
+	void handle_accepted_landing(const std::shared_ptr<rclcpp_action::ServerGoalHandle<Land>> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_landing \n";
-		std::thread{std::bind(&OffboardControl::execute_landing<NavigateToPose>, this, _1, true), goal_handle}.detach();
+		std::thread{std::bind(&OffboardControl::execute_landing<Land>, this, _1, true), goal_handle}.detach();
 	}
 	
-	void handle_accepted_sequence(const std::shared_ptr<GoalHandleNavigateThroughPoses> goal_handle){
+	void handle_accepted_sequence(const std::shared_ptr<rclcpp_action::ServerGoalHandle<NavigateThroughPoses>> goal_handle){
 		using namespace std::placeholders;
 		std::cout << "In handle_accepted_sequence \n";
 		std::thread{std::bind(&OffboardControl::execute_sequence, this, _1), goal_handle}.detach();
 	}
 	
-	void execute_sequence(const std::shared_ptr<GoalHandleNavigateThroughPoses> goal_handle){
+	void execute_sequence(const std::shared_ptr<rclcpp_action::ServerGoalHandle<NavigateThroughPoses>> goal_handle){
 		//depending on action call execute waypoint, execute_takeoff or execute_landing
 		//check if goal_handle during called subfunction was canceled
 		
