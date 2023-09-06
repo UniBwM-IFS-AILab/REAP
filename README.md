@@ -70,7 +70,7 @@ Make sure the `"OriginGeopoint"` field of settings.json corresponds to the real 
 Download the tarball. This tarball contains a WSL2 instance with all required modules installed.
 Install the downloaded tarball with:
 ```
-wsl --import Companion <InstallLocation> <InstallTarFile.tar>
+wsl --import Dev_Companion <InstallLocation> <InstallTarFile.tar>
 ```
 For more information see: https://learn.microsoft.com/en-us/windows/wsl/use-custom-distro.
 
@@ -101,7 +101,7 @@ Additional information can be found here: https://microsoft.github.io/AirSim/px4
 
 ### Usage
   - Start the Unreal Engine with an imported LIDAR file. Make sure to use the LIDAR file given under [Create an UE4 project with imported LIDAR files](#create-an-ue4-project-with-imported-lidar-files) so everything works out-of-the-box.
- - Start the imported WSL2 instance. In the home folder there should be a shell script called "start_upf_simulation.sh". Make sure that the name of your imported WSL2 instance matches the configured name in the shellscript (in our case `Companion`; if not sure, print the name with `wsl --list` in the Windows Terminal). Execute this script and the simulated drone in UE4 should take off and execute the plan. If you wish to customize the LIDAR environment and the executed plan, see [Editing the Simulation Environment](#editing-the-simulation-environment).
+ - Start the imported WSL2 instance. In the home folder there should be a shell script called "start_upf_simulation.sh". Make sure that the name of your imported WSL2 instance matches the configured name in the shellscript (in our case `Dev_Companion`; if not sure, print the name with `wsl --list` in the Windows Terminal). Execute this script and the simulated drone in UE4 should take off and execute the plan. If you wish to customize the LIDAR environment and the executed plan, see [Editing the Simulation Environment](#editing-the-simulation-environment).
 
 
 ## Manual Installation (without Tarball)
