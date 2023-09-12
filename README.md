@@ -164,11 +164,13 @@ source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.
 * * *
 
 #### Setting up the Action Server
-The **Action Server** is based on the ["ROS2 Example Applications"](https://docs.px4.io/main/en/ros/ros2_comm.html#ros-2-example-applications) in the official PX4 documentation. If you want to read out the state of battery charge, you first have to enable relevant message types by editing the file `dds_topic.yaml` in the PX4-Autopilot as described [here](https://docs.px4.io/main/en/middleware/uxrce_dds.html#dds-topics-yaml). Just append the following lines to the publication section of the `dds_topic.yaml` file within the directory `~/PX4-Autopilot/src/modules/uxrce_dds_client`:
+The **Action Server** is based on the ["ROS2 Example Applications"](https://docs.px4.io/main/en/ros/ros2_comm.html#ros-2-example-applications) in the official PX4 documentation. If you want to read additional PX4 states, such as battery charge or gps home position, you first have to enable relevant message types by editing the file `dds_topic.yaml` in the PX4-Autopilot as described [here](https://docs.px4.io/main/en/middleware/uxrce_dds.html#dds-topics-yaml). Just append the following lines to the publication section of the `dds_topic.yaml` file within the directory `~/PX4-Autopilot/src/modules/uxrce_dds_client`:
 
 ```
   - topic: /fmu/out/battery_status
     type: px4_msgs::msg::BatteryStatus
+  - topic: /fmu/out/home_position
+    type: px4_msgs::msg::HomePosition
 ```
 
 Afterwards you have to make a clean rebuild of PX4-Autopilot. You might also want to add the line `source ~/offboard_control_ws/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the offboard_control_ws workspace every time you start a new terminal tab within the WSL2 instance.
