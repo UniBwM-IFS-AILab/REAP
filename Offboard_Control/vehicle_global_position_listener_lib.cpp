@@ -59,6 +59,10 @@ public:
 		
 		px4_msgs::msg::VehicleGlobalPosition empty_gps_msg{};
 		recent_gps_msg = std::make_shared<px4_msgs::msg::VehicleGlobalPosition>(std::move(empty_gps_msg));
+		// initialize with negative values to check if initial message was received
+		recent_gps_msg->lat = -1;
+		recent_gps_msg->lon = -1;
+		recent_gps_msg->alt = -1;
 		
 		px4_msgs::msg::VehicleOdometry empty_ned_msg{};
 		recent_ned_msg = std::make_shared<px4_msgs::msg::VehicleOdometry>(std::move(empty_ned_msg));
