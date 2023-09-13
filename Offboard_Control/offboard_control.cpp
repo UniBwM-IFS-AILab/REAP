@@ -548,11 +548,13 @@ private:
 	
 	/**
 	 * @brief Send a command to the vehicle to land
-	 *        the documentation says it at the specified position (GPS) but in the airsim simulation it just lands at the current position
+	 *        the documentation says its at the specified position (GPS) but in the airsim simulation it just lands at the current position
+	 *        see https://discuss.px4.io/t/land-mode-always-land-to-x-0-y-0/33742
 	 */
 	void OffboardControl::land(double latitude, double longitude, double altitude) {
 		publish_vehicle_command(VehicleCommand::VEHICLE_CMD_NAV_LAND, 0, 0, 0, 0, latitude, longitude, altitude);
-		RCLCPP_INFO(this->get_logger(), "Landing command send for GPS location: lat %lf, lon %lf, alt %lf", latitude, longitude, altitude);
+		//RCLCPP_INFO(this->get_logger(), "Landing command sent for GPS location: lat %lf, lon %lf, alt %lf", latitude, longitude, altitude);
+		RCLCPP_INFO(this->get_logger(), "Landing command sent");
 		rclcpp::Rate sleep_timer(2);
 		sleep_timer.sleep();
 		is_flying_ = false;
