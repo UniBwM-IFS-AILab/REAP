@@ -110,13 +110,13 @@ The following steps are meant for a manual setup of the REAP framework without t
 Follow the instructions under [Installation with Tarball](#installation-with-tarball) up until the section [Import WSL2 Tarball](#import-wsl2-tarball) (i.e. install Unreal Engine 4 with the AirSim plugin). In the following, the **manual** setup of the remaining modules (see overview of the system architecture above) is described. First, setup a [WSL2 Ubuntu instance with ROS2](#system-requirements). Next, [allow incoming connections in Windows](#allow-incoming-connections-in-windows) and then follow the steps bellow.
 
 ### Setup of the AI-Planning Component
-**PlanSys2** provides a framework for translating symbolic actions from generated AI plans into continuous ROS2 commands and is the central part of the AI-planning component. Follow the instructions under: https://plansys2.github.io/getting_started/index.html to install PlanSys2 on your **WSL2 instance** (follow installation instructions under "Getting Started" and run the example code to verify everything works correctly).
+**PlanSys2** provides a framework for translating symbolic actions from generated AI plans into continuous ROS2 commands and is the central part of the AI-planning component. Follow the instructions under: https://plansys2.github.io/getting_started/index.html to install PlanSys2 on your **WSL2 instance** (follow installation instructions under "Getting Started" and run the example code to verify everything works correctly). If the main branch of PlanSys2 doesn't work you can use the 'galactic-devel' branch.
 > **⚠ Info**
-> You might need to install following packages so PlanSys2 works as intended
+> You might need to install the following packages so PlanSys2 works as intended
 >
 > ``` sudo apt install ros-galactic-nav2-msgs ros-galactic-test-msgs ```
 >
-> After running `colcon build` as given in the installation instructions, you need to run `source install/local_setup.bash`
+> After running `colcon build` as given in the installation instructions, you need to run `source install/setup.bash`
 
 
 
