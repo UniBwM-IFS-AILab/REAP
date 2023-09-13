@@ -93,11 +93,11 @@ public:
 			recent_gps_msg = std::make_unique<px4_msgs::msg::VehicleGlobalPosition>(*msg);
 			
 			// initialization logic, relevant the first time a message is received
-            if (!gps_promise_set)
-            {
-                gps_promise.set_value(true);
-                gps_promise_set = true;  // Record that promise has been set
-            }
+			if (!gps_promise_set)
+			{
+				gps_promise.set_value(true);
+				gps_promise_set = true;  // Record that promise has been set
+			}
 			
 			//std::cout << "recent_msg timestamp (should be same as above): " << recent_msg->timestamp << std::endl;
 		});
@@ -145,8 +145,8 @@ public:
 			gps_promise_set = false;
 			gps_promise = std::promise<bool>();
 		}
-        return gps_promise.get_future();
-    }
+		return gps_promise.get_future();
+	}
 
 private:
 	rclcpp::Subscription<px4_msgs::msg::VehicleGlobalPosition>::SharedPtr subscription_gps;
