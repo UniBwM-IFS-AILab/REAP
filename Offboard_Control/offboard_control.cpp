@@ -49,6 +49,8 @@
 // including aerostack2 msgs from other workspace (works after calling the relevant <workspace/install>/setup.bash)
 #include "as2_msgs/action/take_off.hpp"
 #include "as2_msgs/action/land.hpp"
+#include "as2_msgs/srv/get_origin.hpp"
+#include "as2_msgs/srv/set_origin.hpp"
 
 // following import is for communication with Plansys2 and based on action model
 // see ROS2 tutorial under https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions/Understanding-ROS2-Actions.html
@@ -113,23 +115,27 @@ public:
 
 		name_prefix_ = name_prefix;
 		
-		// given GPS coordinates are dummy numbers for initialization, actual Home position is set automatically in takeoff (based on settings.json)
-		GPS_converter_ = std::make_shared<GeodeticConverter>(48.0260, 11.8725);
-		
-		
 		// get content from listeners
 		battery_listener_ = battery_listener;
 		gps_listener_ = gps_listener;
 		
+		// set home gps origin for reference
+		// possible to get reference frame origin from https://docs.px4.io/main/en/msg_docs/VehicleLocalPosition.html
+		// possible to set NED origin via VEHICLE_CMD_SET_GPS_GLOBAL_ORIGIN = 100000, normally set on EKF2-module start
+		// for simplicity we use the gps_listener->recent_gps_msg before the first arming
+		GPS_converter_ = std::make_shared<GeodeticConverter>(gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, gps_listener_->recent_gps_msg->alt);
+		RCLCPP_INFO(this->get_logger(), "Set GPS Origin to configured PX4 origin (%lf, %lf, %lf)", gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon, gps_listener_->recent_gps_msg->alt);
+		
 		auto timer_callback = [this]() -> void {
 
+			// https://docs.px4.io/main/en/flight_modes/offboard.html
 			publish_offboard_control_mode();
 			
 		};
 		timer_ = this->create_wall_timer(200ms, timer_callback);
 	}
 	
-	void start_server(){
+	void start_action_server(){
 		using namespace std::placeholders;
 		
 		RCLCPP_INFO(get_logger(), "Starting action server:");
@@ -164,6 +170,18 @@ public:
 
 			RCLCPP_INFO(get_logger(), "Action servers are ready. \n");
 	}
+	
+	void start_services(){
+		using namespace std::placeholders;
+		
+		RCLCPP_INFO(get_logger(), "Starting services:");
+
+		get_origin_service_ = this -> create_service<as2_msgs::srv::GetOrigin>(name_prefix_ + "srv/get_origin", std::bind(&OffboardControl::get_origin, this, _1, _2));
+		set_origin_service_ = this -> create_service<as2_msgs::srv::SetOrigin>(name_prefix_ + "srv/set_origin", std::bind(&OffboardControl::set_origin, this, _1, _2));
+		
+
+		RCLCPP_INFO(get_logger(), "Services are ready. \n");
+	}
 
 	void arm();
 	void disarm();
@@ -171,11 +189,16 @@ public:
 private:
 
 	enum RETURN_VALUE { action_failure = -1, action_completed = 0, goal_succeeded = 4, goal_canceled = 5};
-
+	
+	// pointer to action server objects
 	rclcpp_action::Server<NavigateToPose>::SharedPtr waypoint_action_server_;
 	rclcpp_action::Server<TakeOff>::SharedPtr takeoff_action_server_;
 	rclcpp_action::Server<Land>::SharedPtr landing_action_server_;
 	rclcpp_action::Server<NavigateThroughPoses>::SharedPtr sequence_action_server_;
+	
+	// pointer to services
+	rclcpp::Service<as2_msgs::srv::GetOrigin>::SharedPtr get_origin_service_;
+	rclcpp::Service<as2_msgs::srv::SetOrigin>::SharedPtr set_origin_service_;
 
 	rclcpp::TimerBase::SharedPtr timer_;
 	
@@ -187,7 +210,9 @@ private:
 
 	bool is_flying_ = false; //!< boolean for checking if the drone needs to arm and takeoff
 	std::string name_prefix_;
-
+	
+	void set_home_px4(double latitude = 0.0, double longitude = 0.0, double altitude = 0.0);
+	
 	void takeoff();
 	void land(double latitude = 0.0, double longitude = 0.0, double altitude = 0.0);
 	double move_to_gps(double latitude, double longitude, double altitude);
@@ -242,6 +267,9 @@ private:
 		std::string sequence = goal_handle->get_goal()->behavior_tree;
 		
 		auto result = std::make_shared<NavigateThroughPoses::Result>();
+		
+		//its possible to abort the goal instead of succeed if it is somehow not possible to execute it
+		//goal_handle->abort(result);
 		
 		//split comma separated behavior_tree string into string vector
 		std::istringstream oss(sequence);
@@ -315,8 +343,8 @@ private:
 		
 		rclcpp::Rate loop_rate(1);
 		
-		// use Feedback after setting gps home position to send it to action client (pddl planner)
-		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
+		// auto feedback = std::make_shared<typename ActionT::Feedback>();
+		// goal_handle->publish_feedback(feedback);
 		auto result = std::make_shared<typename ActionT::Result>();
 		
 		publish_offboard_control_mode();
@@ -369,16 +397,22 @@ private:
 		
 		rclcpp::Rate loop_rate(1);
 		
-		// use Feedback after setting gps home position to send it to action client (pddl planner)
-		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
-		auto result = std::make_shared<typename ActionT::Result>();
+		//if constexpr (std::is_same<ActionT, TakeOff>::value) {
+		//	float takeoff_height = goal_handle->get_goal()->takeoff_height;
+		//}
 		
-		// set home gps origin for reference when receiving takeoff command
-		GPS_converter_ = std::make_shared<GeodeticConverter>(gps_listener_->recent_gps_msg->lat, gps_listener_->recent_gps_msg->lon);
-		RCLCPP_INFO(this->get_logger(), "Set GPS Origin to current position");
+		// auto feedback = std::make_shared<typename ActionT::Feedback>();
+		// feedback->actual_takeoff_height = 10;
+		// goal_handle->publish_feedback(feedback);
+		
+		auto result = std::make_shared<typename ActionT::Result>();
+		if constexpr (std::is_same<ActionT, TakeOff>::value) {
+			result->takeoff_success = false;
+		}
 		
 		publish_offboard_control_mode();
 		if(!is_flying_){
+			//https://discuss.px4.io/t/where-to-find-custom-mode-list-for-mav-cmd-do-set-mode/32756/4
 			this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
 			this->arm();
 			
@@ -396,9 +430,14 @@ private:
 		while (rclcpp::ok()) {
 			loop_rate.sleep();
 			
+			// TODO: altitude should be relative to ground...
+			// check vehicle state instead of alt > 5 ... (lookup which px4 state represents takeoff vs normal-hover mode)
 			if (rclcpp::ok() && gps_listener_->recent_gps_msg->alt > 5) {
 				loop_rate.sleep();
 				if(final_action){
+					if constexpr (std::is_same<ActionT, TakeOff>::value) {
+						result->takeoff_success = true;
+					}
 					goal_handle->succeed(result);
 					return OffboardControl::RETURN_VALUE::goal_succeeded;
 				}
@@ -409,39 +448,18 @@ private:
 		return OffboardControl::RETURN_VALUE::action_completed;
 	}
 	
-	// T should be of type rclcpp_action::ServerGoalHandle<ActionT>
 	template<typename ActionT>
 	int execute_landing(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle, bool final_action = false){
 		std::cout << "In execute_landing \n";
 		
 		rclcpp::Rate loop_rate(1);
 		
-		// use Feedback after setting gps home position to send it to action client (pddl planner)
-		// auto feedback = std::make_shared<NavigateToPose::Feedback>();
+		// auto feedback = std::make_shared<typename ActionT::Feedback>();
+		// goal_handle->publish_feedback(feedback);
+		
 		auto result = std::make_shared<typename ActionT::Result>();
-		
-		
-		double home_lat, home_lon, home_alt;
-		GPS_converter_->getHomeGPS(&home_lat, &home_lon, &home_alt);
-		
-		double distance = 0;
-		while (rclcpp::ok()) {
-			
-			if (goal_handle->is_canceling()) {
-				this->hover_in_position();
-				if(final_action){
-					goal_handle->canceled(result);
-				}
-				RCLCPP_INFO(this->get_logger(), "Landing canceled");
-				return OffboardControl::RETURN_VALUE::goal_canceled;
-			}
-			
-			loop_rate.sleep();
-			distance = move_to_gps(home_lat, home_lon, 20);
-			
-			if(distance < 5){
-				break;
-			}
+		if constexpr (std::is_same<ActionT, Land>::value) {
+			result->land_success = false;
 		}
 		
 		publish_offboard_control_mode();
@@ -451,9 +469,14 @@ private:
 		}
 		while (rclcpp::ok()) {
 			loop_rate.sleep();
+			// TODO: altitude should be relative to ground...
+			// check vehicle state landed==disarmed istead of alt < 5 -> https://docs.px4.io/main/en/msg_docs/VehicleStatus.html
 			if (rclcpp::ok() && gps_listener_->recent_gps_msg->alt < 5) {
 				loop_rate.sleep();
 				if(final_action){
+					if constexpr (std::is_same<ActionT, Land>::value) {
+						result->land_success = true;
+					}
 					goal_handle->succeed(result);
 					return OffboardControl::RETURN_VALUE::goal_succeeded;
 				}
@@ -463,10 +486,56 @@ private:
 		}
 		return OffboardControl::RETURN_VALUE::action_completed;
 	}
-};
+	
+	void get_origin(const std::shared_ptr<as2_msgs::srv::GetOrigin::Request> request, std::shared_ptr<as2_msgs::srv::GetOrigin::Response> response){
+
+		 response->origin.latitude = gps_listener_->recent_home_msg->lat;
+		 response->origin.longitude = gps_listener_->recent_home_msg->lon;
+		 response->origin.altitude = gps_listener_->recent_home_msg->alt;
+		 
+		 response->success = true;
+	}
+	
 	
 	/**
-	 * @brief Send a command to the vehicle to take off 10 meters
+	 * @brief callback for set_origin service --> actually just setting home. NED origin should stay the same
+	 */
+	void set_origin(const std::shared_ptr<as2_msgs::srv::SetOrigin::Request> request, std::shared_ptr<as2_msgs::srv::SetOrigin::Response> response){
+		
+		double lat = request->origin.latitude;
+		double lon = request->origin.longitude;
+		double alt = request->origin.altitude;
+		
+		//send new home to px4
+		this->set_home_px4(lat, lon, alt);
+		
+		//wait
+		rclcpp::Rate sleep_timer(2);
+		sleep_timer.sleep();
+		
+		//check if home is new one
+		response->success = gps_listener_->recent_home_msg->lat == lat && gps_listener_->recent_home_msg->lon == lon && gps_listener_->recent_home_msg->alt == alt;
+		
+		// set internal origin to request coordinates and then return
+		// NOTE!!! should not reset GPS_converter_ because for PX4, home and NED origin are different
+		//if (response->success){
+		//	GPS_converter_ = std::make_shared<GeodeticConverter>(lat, lon, alt);
+		//}
+	}
+};
+
+	/**
+	 * @brief Send a command to set the home position of the vehicle
+	 */
+	void OffboardControl::set_home_px4(double latitude, double longitude, double altitude) {
+		// |Use current (1=use current location, 0=use specified location)| Empty| Empty| Empty| Latitude| Longitude| Altitude|
+		publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_HOME, 0, 0, 0, 0, latitude, longitude, altitude);
+		RCLCPP_INFO(this->get_logger(), "SetHome command send");
+	}
+	
+	
+	/**
+	 * @brief Send a command to the vehicle to take off 10 meters <-- altitude is not relative to the ground
 	 */
 	void OffboardControl::takeoff() {
 		// Takeoff from ground / hand |Minimum pitch (if airspeed sensor present), desired pitch without sensor| Empty| Empty| Yaw angle (if magnetometer present), ignored without magnetometer| Latitude| Longitude| Altitude|
@@ -658,9 +727,17 @@ int main(int argc, char* argv[]) {
 	
 	auto battery_listener = std::make_shared<BatteryStatusListener>(name_prefix);
 	auto gps_listener = std::make_shared<VehicleGlobalPositionListener>(name_prefix);
-	auto controller = std::make_shared<OffboardControl>(battery_listener, gps_listener, name_prefix);
 	
-	controller -> start_server();
+	//spin listener first for a short time so initial status messages arrive
+	//executor.spin_node_some(gps_listener); // from https://docs.ros2.org/foxy/api/rclcpp/classrclcpp_1_1Executor.html <-- doesnt work
+	//alternative with timeout:
+	//rclcpp::spin_until_future_complete(gps_listener, gps_listener -> get_next_gps_future(), std::chrono::seconds(10));
+	//without timeout:
+	rclcpp::spin_until_future_complete(gps_listener, gps_listener -> get_next_gps_future());
+	
+	auto controller = std::make_shared<OffboardControl>(battery_listener, gps_listener, name_prefix);
+	controller -> start_action_server();
+	controller -> start_services();
 	
 	rclcpp::executors::SingleThreadedExecutor executor;
 
