@@ -32,8 +32,8 @@
  ****************************************************************************/
 
 /**
- * @brief battery uORB topic listener example
- * @file battery_status_listener_lib.cpp
+ * @brief vehicle uORB topic listener
+ * @file vehicle_status_listener_lib.cpp
  * @addtogroup examples
  * @author Lucas Mair
  */
@@ -44,14 +44,14 @@
 /**
  * @brief Sensor Combined uORB topic data callback
  */
-class BatteryStatusListener : public rclcpp::Node
+class VehicleStatusListener : public rclcpp::Node
 {
 public:
 	
 	px4_msgs::msg::BatteryStatus::SharedPtr recent_msg;
 	
 	// name_prefix should have the format "<identifier>/"
-	explicit BatteryStatusListener(std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "battery_status_listener") {
+	explicit VehicleStatusListener(std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "vehicle_status_listener") {
 		px4_msgs::msg::BatteryStatus empty_msg{};
 		recent_msg = std::make_shared<px4_msgs::msg::BatteryStatus>(std::move(empty_msg));
 
@@ -86,10 +86,10 @@ private:
 
 /*
 int main(int argc, char *argv[]) {
-	std::cout << "Starting battery_status listener node..." << std::endl;
+	std::cout << "Starting vehicle_status listener node..." << std::endl;
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 	rclcpp::init(argc, argv);
-	rclcpp::spin(std::make_shared<BatteryStatusListener>());
+	rclcpp::spin(std::make_shared<VehicleStatusListener>());
 	
 
 	rclcpp::shutdown();
