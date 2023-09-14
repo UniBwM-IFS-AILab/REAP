@@ -40,6 +40,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <px4_msgs/msg/battery_status.hpp>
+#include <px4_msgs/msg/vehicle_status.hpp>
 
 /**
  * @brief Sensor Combined uORB topic data callback
@@ -48,17 +49,22 @@ class VehicleStatusListener : public rclcpp::Node
 {
 public:
 	
-	px4_msgs::msg::BatteryStatus::SharedPtr recent_msg;
+	px4_msgs::msg::BatteryStatus::SharedPtr recent_battery_msg;
+	px4_msgs::msg::VehicleStatus::SharedPtr recent_status_msg;
 	
 	// name_prefix should have the format "<identifier>/"
 	explicit VehicleStatusListener(std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "vehicle_status_listener") {
-		px4_msgs::msg::BatteryStatus empty_msg{};
-		recent_msg = std::make_shared<px4_msgs::msg::BatteryStatus>(std::move(empty_msg));
+		
+		px4_msgs::msg::BatteryStatus empty_bat_msg{};
+		recent_battery_msg = std::make_shared<px4_msgs::msg::BatteryStatus>(std::move(empty_bat_msg));
+		
+		px4_msgs::msg::VehicleStatus empty_stat_msg{};
+		recent_status_msg = std::make_shared<px4_msgs::msg::VehicleStatus>(std::move(empty_stat_msg));
 
 		rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
 		auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 		
-		subscription_ = this->create_subscription<px4_msgs::msg::BatteryStatus>(
+		battery_subscription_ = this->create_subscription<px4_msgs::msg::BatteryStatus>(
 			name_prefix + "fmu/out/battery_status", qos,
 			[this](const px4_msgs::msg::BatteryStatus::UniquePtr msg) {
 				/*
@@ -72,16 +78,37 @@ public:
 			//std::cout << "remaining_capacity_wh: " << msg->remaining_capacity_wh  << std::endl; <-- permanent 0
 			*/
 			
-			//recent_msg = std::move(msg); <-- this doesnt work because the unique_ptr is const
+			//recent_battery_msg = std::move(msg); <-- this doesnt work because the unique_ptr is const
 			
-			recent_msg = std::make_unique<px4_msgs::msg::BatteryStatus>(*msg);
-			//std::cout << "recent_msg timestamp (should be same as above): " << recent_msg->timestamp << std::endl;
+			recent_battery_msg = std::make_unique<px4_msgs::msg::BatteryStatus>(*msg);
+			//std::cout << "recent_battery_msg timestamp (should be same as above): " << recent_battery_msg->timestamp << std::endl;
+
+		});
+		
+		vehicle_subscription_ = this->create_subscription<px4_msgs::msg::VehicleStatus>(
+			name_prefix + "fmu/out/vehicle_status", qos,
+			[this](const px4_msgs::msg::VehicleStatus::UniquePtr msg) {
+			/*
+			https://docs.px4.io/main/en/msg_docs/VehicleStatus.html
+			
+			uint8 arming_state
+			uint8 ARMING_STATE_DISARMED = 1
+			uint8 ARMING_STATE_ARMED    = 2
+			
+			uint8 nav_state
+			uint8 NAVIGATION_STATE_AUTO_TAKEOFF = 17        # Takeoff
+			uint8 NAVIGATION_STATE_AUTO_LAND = 18           # Land
+			*/
+			
+			recent_status_msg = std::make_unique<px4_msgs::msg::VehicleStatus>(*msg);
+			//std::cout << "recent_status_msg timestamp (should be same as above): " << recent_status_msg->timestamp << std::endl;
 
 		});
 	}
 
 private:
-	rclcpp::Subscription<px4_msgs::msg::BatteryStatus>::SharedPtr subscription_;
+	rclcpp::Subscription<px4_msgs::msg::BatteryStatus>::SharedPtr battery_subscription_;
+	rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_subscription_;
 };
 
 /*
