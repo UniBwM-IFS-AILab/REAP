@@ -66,7 +66,7 @@ install(TARGETS debug_vect_advertiser DESTINATION lib/${PROJECT_NAME})
 add_executable(offboard_control src/examples/offboard/offboard_control.cpp 
 								src/examples/offboard/GeodeticConverter.hpp
 								src/examples/offboard/vehicle_global_position_listener_lib.cpp 
-								src/examples/offboard/battery_status_listener_lib.cpp
+								src/examples/offboard/vehicle_status_listener_lib.cpp
 								)
 ament_target_dependencies(offboard_control rclcpp px4_msgs nav2_msgs rclcpp_action Eigen3 as2_msgs)
 target_link_libraries(offboard_control Eigen3::Eigen)
