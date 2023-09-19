@@ -121,7 +121,7 @@ public:
 			
 		});
 		
-		std::cout << "Setup home position..." << std::endl;
+		std::cout << "Setup home position subscriber..." << std::endl;
 		subscription_home = this->create_subscription<px4_msgs::msg::HomePosition>(
 			name_prefix + "fmu/out/home_position", qos,
 			[this](const px4_msgs::msg::HomePosition::UniquePtr msg) {
