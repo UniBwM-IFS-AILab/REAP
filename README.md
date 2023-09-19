@@ -31,8 +31,8 @@ Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulatio
     + [Setup of the AI-Planning Component](#setup-of-the-ai-planning-component)
     + [Setup of the Validation & Visualization Component](#setup-of-the-validation-and-visualization-component)
     + [Setup of the Ground Control Software](#setup-of-the-ground-control-software)
-    + [Multidrone Simulation](#multidrone-simulation)
     + [Setup of the Environment Manipulation](#setup-of-the-environment-manipulation)
+  * [Multidrone Simulation](#multidrone-simulation)
   * [Editing the Simulation Environment](#editing-the-simulation-environment)
   * [Contact Information](#contact-information)
 
@@ -217,17 +217,6 @@ cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py
 cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2_demo traverse_areas.launch.py
 ```
 
-### Setup of the Ground Control Software
-
-Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal Simulation and PX4 are already running, it should automatically connect.
-
-### Multidrone Simulation
-
-For simulating multiple drones, you first have to modify the AirSim settings.json file. This allows you to create multiple drone actors in the Unreal Environment. The REAP repo contains an example for 3 drones in the file `/AirSim_alternative_settings/settings_multi.json`. Just copy it and replace the content of your own settings.json, but you can modify it further with a custom amount.
-The second step depends on your use case:
-- If you just want to control multiple drones via QGroundControl, you can use the script `/multi_drone_scripts/sitl_multiple_run.sh` to start multiple px4 instances. Run it from the directory `~/PX4-Autopilot/Tools/simulation/sitl_multiple_run.sh` in the WSL2 instance. When starting QGroundControl afterwards, there will be a selector available, where you can define a custom flight mission for each drone individually.
-- If you want to use pddl-based planning with UPF4ROS, you can use the alternative startup script `start_upf_simulation_multi.sh` instead. You can modify the variable "drone_count" inside of it, but you have to make sure that the number matches your configured AirSim settings. You will need to use the content of our `aliases.sh` file for it to work, similarly to the `start_upf_simulation.sh`.
-
 ### Setup of the Environment Manipulation
 You can externally control the simulation environment (i.e. spawn new objects, change weather conditions, etc.) using the **Remote Control API** for the Unreal Engine and the **AirSim API**.
 
@@ -242,6 +231,17 @@ needs to be changed to:
 ```
 
 For setup information of the AirSim API see: https://microsoft.github.io/AirSim/apis/. This API allows you to impact the physics simulation (e.g. simulate wind or rain). An example python script ("remoteControlWeather.py") that has to run from within Windows is provided in this repo.
+
+### Setup of the Ground Control Software
+
+Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal Simulation and PX4 are already running, it should automatically connect.
+
+## Multidrone Simulation
+
+For simulating multiple drones, you first have to modify the AirSim settings.json file. This allows you to create multiple drone actors in the Unreal Environment. The REAP repo contains an example for 3 drones in the file `REAP/AirSim_alternative_settings/settings_multi.json`. Just copy it and replace the content of your own settings.json, but you can modify it further with a custom amount.
+The second step depends on your use case:
+- If you just want to control multiple drones via QGroundControl, you can use the script `REAP/multi_drone_scripts/sitl_multiple_run.sh` to start multiple px4 instances. Run it from the directory `~/PX4-Autopilot/Tools/simulation/sitl_multiple_run.sh` in the WSL2 instance. When starting QGroundControl afterwards, there will be a selector available, where you can define a custom flight mission for each drone individually.
+- If you want to use pddl-based planning with UPF4ROS, you can use the alternative startup script `start_upf_simulation_multi.sh` instead. You can modify the variable "drone_count" inside of it, but you have to make sure that the number matches your configured AirSim settings. You will need to use the content of our `aliases.sh` file for it to work, similarly to the `start_upf_simulation.sh`.
 
 ## Editing the Simulation Environment
 
