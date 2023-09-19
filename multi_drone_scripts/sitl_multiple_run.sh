@@ -2,6 +2,8 @@
 # run multiple instances of the 'px4' binary, but w/o starting the simulator.
 # It assumes px4 is already built, with 'make px4_sitl_default'
 
+# Expected location of this script is /PX4-Autopilot/Tools/simulation/sitl_multiple_run.sh
+
 # The simulator is expected to send to TCP port 4560+i for i in [0, N-1]
 # For example jmavsim can be run like this:
 #./Tools/simulation/jmavsim/jmavsim_run.sh -p 4561 -l
