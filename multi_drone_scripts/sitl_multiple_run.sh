@@ -21,7 +21,7 @@ pkill -x px4 || true
 
 sleep 1
 
-export PX4_SIM_MODEL=iris
+export PX4_SIM_MODEL=none_iris
 
 n=0
 while [ $n -lt $sitl_num ]; do
