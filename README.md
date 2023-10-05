@@ -42,7 +42,7 @@ You can quickly set up the framework with a provided tarball as descibed in [Ins
 
 Below you can find an overview of the system architecture. The provided tarball contains all modules, except the "Simulator" module and the AirSim API from the "Environment Manipulation" module. QGroundControl and the Unreal Remote Control API can run either under Windows or the WSL instance if the IP settings are adjusted accordingly.
 
-![Step11](https://github.com/UniBwM-IFS-AILab/REAP/assets/10440274/75556251-e737-44d0-bb77-b0e991ce2c37)
+![Step11](https://github.com/UniBwM-IFS-AILab/REAP/assets/10440274/b409af9b-4e6e-4133-9120-26ca70d94665)
 
 ## System requirements
 We tested REAP using the following development environment. Deviation may not necessary cripple the system, but we cannot guarantee that it will work.
