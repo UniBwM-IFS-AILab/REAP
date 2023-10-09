@@ -262,7 +262,7 @@ In this section relevant files are described, that are required to customize the
 - Providing an interface for [ALNS](https://github.com/N-Wouda/ALNS).
 - Upgrading to Unreal Engine 5 via the [Colosseum](https://github.com/CodexLabsLLC/Colosseum) fork of AirSim.
 - A readme section about integrating photogrammetry models or environment streaming via Cesium plugin/Google Maps.
-- Hardware integration for swarm testing, [Platform](www.diatone.us/products/roma-f7-6s-pnp-bnf-drone) and [Companion](www.nvidia.com/de-de/autonomous-machines/embedded-systems/jetson-orin/)
+- Hardware integration for swarm testing, [Platform](https://www.diatone.us/products/roma-f7-6s-pnp-bnf-drone) and [Companion](https://www.nvidia.com/de-de/autonomous-machines/embedded-systems/jetson-orin/)
 
 ## Contact Information
 
