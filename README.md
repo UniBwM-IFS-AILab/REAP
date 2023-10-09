@@ -247,8 +247,9 @@ The second step depends on your use case:
 
 ## Replanning
 TODO
-
+```
 ros2 service call /upf4ros2/srv/add_goal upf_msgs/srv/AddGoal '{"problem_name": "uav_problem", "drone_id": "vhcl0/", "goal": [{"goal": {"expressions": [{"atom": [], "type": "up:bool", "kind": 5}, {"atom": [{"symbol_atom": ["visited"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "up:bool", "kind": 3}, {"atom": [{"symbol_atom": ["myuav"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "uav", "kind": 1}, {"atom": [{"symbol_atom": ["waters1"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "waypoint", "kind": 1}], "level": [0, 1, 1, 1]}, "timing": []}], "goal_with_cost": []}'
+```
 
 ## Editing the Simulation Environment
 
