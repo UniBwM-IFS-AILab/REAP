@@ -32,6 +32,7 @@ Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulatio
     + [Setup of the Validation & Visualization Component](#setup-of-the-validation-and-visualization-component)
     + [Setup of the Ground Control Software](#setup-of-the-ground-control-software)
     + [Setup of the Environment Manipulation](#setup-of-the-environment-manipulation)
+  * [Installation Instructions for Ubuntu](#ubuntu-installation)
   * [Multidrone Simulation](#multidrone-simulation)
   * [Replanning](#replanning)
   * [Editing the Simulation Environment](#editing-the-simulation-environment)
@@ -45,10 +46,19 @@ Below you can find an overview of the system architecture. The provided tarball 
 ![Step11](https://github.com/UniBwM-IFS-AILab/REAP/assets/10440274/b409af9b-4e6e-4133-9120-26ca70d94665)
 
 ## System requirements
-We tested REAP using the following development environment. Deviation may not necessary cripple the system, but we cannot guarantee that it will work.
+We tested REAP using the following development environment:
   - Windows 11
   - WSL2 instance (Ubuntu 20.04) (Installation instructions here: https://learn.microsoft.com/en-us/windows/wsl/install)
   - ROS2 galactic installed on the same WSL2 Ubuntu instance (Installation instructions here: https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html)
+
+Furthermore, we tested the framework in an Ubuntu environment:
+   - Ubuntu 20.04 (Ubuntu versions > 20.04 seem to cause problems, because AirSim requires installation of clang8 toolchain which is only available until Ubuntu 20.04)
+   - ROS2 galactic
+
+For Ubuntu installation instructions see [Installation Instructions for Ubuntu](#ubuntu-installation)
+
+A deviation from the system requirements does not necessarily cripple the system, but we cannot guarantee that it will work.
+
 
 ## Installation with Tarball
 
@@ -238,6 +248,10 @@ For setup information of the AirSim API see: https://microsoft.github.io/AirSim/
 
 Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal Simulation and PX4 are already running, it should automatically connect.
 
+## Ubuntu Installation
+
+TODO
+
 ## Multidrone Simulation
 
 For simulating multiple drones, you first have to modify the AirSim [settings.json](https://microsoft.github.io/AirSim/px4_multi_vehicle/) file. This allows you to create multiple drone actors in the Unreal Environment. The REAP repo contains an example for 3 drones in the file `REAP/AirSim_alternative_settings/settings_multi.json`. Just copy it and replace the content of your own settings.json, but you can modify it further with a custom amount.
@@ -246,10 +260,14 @@ The second step depends on your use case:
 - If you want to use pddl-based planning with UPF4ROS, you can use the alternative startup script `start_upf_simulation_multi.sh` instead. You can modify the variable "drone_count" inside of it, but you have to make sure that the number matches your configured AirSim settings. You will need to use the content of our `aliases.sh` file for it to work, similarly to the `start_upf_simulation.sh`.
 
 ## Replanning
-TODO
+You can use following command to test the replanning functionality:
 ```
 ros2 service call /upf4ros2/srv/add_goal upf_msgs/srv/AddGoal '{"problem_name": "uav_problem", "drone_id": "vhcl0/", "goal": [{"goal": {"expressions": [{"atom": [], "type": "up:bool", "kind": 5}, {"atom": [{"symbol_atom": ["visited"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "up:bool", "kind": 3}, {"atom": [{"symbol_atom": ["myuav"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "uav", "kind": 1}, {"atom": [{"symbol_atom": ["waters1"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "waypoint", "kind": 1}], "level": [0, 1, 1, 1]}, "timing": []}], "goal_with_cost": []}'
 ```
+This command adds a goal (visited myuav waters1) to an existing problem (problem name: "uav_problem") for an existing drone (drone_id: "vhcl0"). The command sends a message to the upf4ros2_main class ("upf4ros2/upf4ros2
+/upf4ros2_main.py"). This class tracks the state of the UPF prolbems. When a goal is added via the command above, upf4ros2_main will calculate a new plan (including the added goal) and send it to the plan_executor class ("upf4ros2_demo/upf4ros2_demo/plan_executor.py") via a Replan.srv message containing the updated plan. This will then trigger the "replan" function in plan_executor.
+
+Other functionalities which trigger replanning (e.g. removing a goal, adding a constraint to the planning problem) will be implemented in the future.
 
 ## Editing the Simulation Environment
 
