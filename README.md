@@ -250,7 +250,11 @@ Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.co
 
 ## Ubuntu Installation
 
-TODO
+For an installation under Ubuntu (we tested with 20.04, 22.04 did not work for us) you will have to install Unreal Engine 4 and AirSim in your Ubuntu machine instead of Windows. The setup for the other components (PX4, UPF4ROS2, etc.) remains the same, since under Windows they are also installed in a WSL Ubuntu instance. For the setup of these components check the instructions under [Manual Installation (without Tarball)](#manual-installation-without-tarball).
+
+For installation instructions of Unreal Engine 4 under Linux see: https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/
+
+For installation instructions of AirSim under Linux see: [https://airsim-fork.readthedocs.io/en/latest/build_linux.html](https://microsoft.github.io/AirSim/build_linux/)
 
 ## Multidrone Simulation
 
@@ -264,8 +268,8 @@ You can use following command to test the replanning functionality:
 ```
 ros2 service call /upf4ros2/srv/add_goal upf_msgs/srv/AddGoal '{"problem_name": "uav_problem", "drone_id": "vhcl0/", "goal": [{"goal": {"expressions": [{"atom": [], "type": "up:bool", "kind": 5}, {"atom": [{"symbol_atom": ["visited"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "up:bool", "kind": 3}, {"atom": [{"symbol_atom": ["myuav"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "uav", "kind": 1}, {"atom": [{"symbol_atom": ["waters1"], "int_atom": [], "real_atom": [], "boolean_atom": []}], "type": "waypoint", "kind": 1}], "level": [0, 1, 1, 1]}, "timing": []}], "goal_with_cost": []}'
 ```
-This command adds a goal (visited myuav waters1) to an existing problem (problem name: "uav_problem") for an existing drone (drone_id: "vhcl0"). The command sends a message to the upf4ros2_main class ("upf4ros2/upf4ros2
-/upf4ros2_main.py"). This class tracks the state of the UPF prolbems. When a goal is added via the command above, upf4ros2_main will calculate a new plan (including the added goal) and send it to the plan_executor class ("upf4ros2_demo/upf4ros2_demo/plan_executor.py") via a Replan.srv message containing the updated plan. This will then trigger the "replan" function in plan_executor.
+This command adds a goal (visited myuav waters1) to an existing problem (problem name: "uav_problem") for an existing drone (drone_id: "vhcl0"). The command will call the "add_goal" service in the upf4ros2_main class ("upf4ros2/upf4ros2
+/upf4ros2_main.py"). This class tracks the state of the UPF prolbems. When a goal is added via the command above, upf4ros2_main will calculate a new plan (including the newly added goal) and send it to the plan_executor class ("upf4ros2_demo/upf4ros2_demo/plan_executor.py") via a Replan.srv message containing the updated plan. This will then trigger the "replan" function in plan_executor.
 
 Other functionalities which trigger replanning (e.g. removing a goal, adding a constraint to the planning problem) will be implemented in the future.
 
