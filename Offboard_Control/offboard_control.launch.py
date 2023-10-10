@@ -29,7 +29,7 @@ def launch_setup(context, *args, **kwargs):
 
     # if arguments contains only the "" empty string, then it is completely left out and the next argument "--ros-args" replaces its position in argv[1]
     if count < 2:
-        name_prefix = ""
+        name_prefix = "vhcl0/"
         launch_array.append(
             Node(
                 package='px4_ros_com',
