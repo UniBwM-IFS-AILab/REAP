@@ -723,6 +723,8 @@ int main(int argc, char* argv[]) {
 		RCLCPP_INFO(rclcpp::get_logger("main"), "Argument %d: %s", i, argv[i]);
 	}
 	
+	//set a name prefix only if it was provided externally via a launchfile or by directly running the node
+	//keep in mind that ros2 topic/namespace issues are a likely cause if the components of the framework seem to not communicate with each other
 	if(argv[1]!=NULL && strcmp(argv[1],"--ros-args")!=0){
 		name_prefix = argv[1];
 	}
