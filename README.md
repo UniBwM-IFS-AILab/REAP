@@ -51,7 +51,7 @@ We tested REAP using the following development environment:
   - WSL2 instance (Ubuntu 20.04) (Installation instructions here: https://learn.microsoft.com/en-us/windows/wsl/install)
   - ROS2 galactic installed on the same WSL2 Ubuntu instance (Installation instructions here: https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html)
 
-Furthermore, we tested the framework in an Ubuntu environment:
+Furthermore, we tested the framework in an Ubuntu host environment:
    - Ubuntu 20.04 (Ubuntu versions > 20.04 seem to cause problems, because AirSim requires installation of clang8 toolchain which is only available until Ubuntu 20.04)
    - ROS2 galactic
 
@@ -65,7 +65,7 @@ A deviation from the system requirements does not necessarily cripple the system
 
 
 ### Install Unreal Engine 4 with the AirSim Plugin
-Follow the instructions under: https://microsoft.github.io/AirSim/build_windows/.
+Follow the instructions under: https://microsoft.github.io/AirSim/build_windows/. The most up-to-date Version of Unreal Engine confirmed to be working is currently 4.27.2.
 
 Furthermore, AirSim requires a settings file to operate (should be located under "%USERPROFILE%/Documents/AirSim"). Exchange the default settings.json file with the settings file provided in this repository. Alternative settings configurations can be found in the "AirSim_alternative_settings" directory. For those, just replace the content of the settings.json file with the chosen alternative. For detailed information about AirSim settings see: https://microsoft.github.io/AirSim/settings/.
 
@@ -113,7 +113,7 @@ Additional information can be found here: https://microsoft.github.io/AirSim/px4
 
 
 ### Usage
-  - Start the Unreal Engine with an imported LIDAR file. Make sure to use the LIDAR file given under [Create an UE4 project with imported LIDAR files](#create-an-ue4-project-with-imported-lidar-files) so everything works out-of-the-box.
+  - Start the Unreal Engine (and click on the play button of the scene view after starting UE from the visual studio project) with an imported LIDAR file. Make sure to use the LIDAR file given under [Create an UE4 project with imported LIDAR files](#create-an-ue4-project-with-imported-lidar-files) so everything works out-of-the-box.
  - Start the imported WSL2 instance. In the home folder there should be a shell script called "start_upf_simulation.sh". Make sure that the name of your imported WSL2 instance matches the configured name in the shellscript (in our case `Dev_Companion`; if not sure, print the name with `wsl --list` in the Windows Terminal). Execute this script and the simulated drone in UE4 should take off and execute the plan. If you wish to customize the LIDAR environment and the executed plan, see [Editing the Simulation Environment](#editing-the-simulation-environment).
 
 
