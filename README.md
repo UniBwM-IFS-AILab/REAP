@@ -35,7 +35,7 @@ Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulatio
   * [Installation Instructions for Ubuntu](#ubuntu-installation)
   * [Multidrone Simulation](#multidrone-simulation)
   * [Replanning](#replanning)
-  * [Editing the Simulation Environment](#editing-the-simulation-environment)
+  * [Important Configuration and Codefiles](#important-configuration-and-codefiles)
   * [Roadmap](#roadmap)
   * [Contact Information](#contact-information)
 
@@ -273,7 +273,7 @@ This command adds a goal (visited myuav waters1) to an existing problem (problem
 
 Other functionalities which trigger replanning (e.g. removing a goal, adding a constraint to the planning problem) will be implemented in the future.
 
-## Editing the Simulation Environment
+## Important Configuration and Codefiles
 
 In this section relevant files are described, that are required to customize the simulation environment to your needs.
 
