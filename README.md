@@ -250,7 +250,7 @@ Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.co
 
 ## Ubuntu Installation
 
-For an installation under Ubuntu (we tested with 20.04, 22.04 did not work for us) you will have to install Unreal Engine 4 and AirSim in your Ubuntu machine instead of Windows. The setup for the other components (PX4, UPF4ROS2, etc.) remains the same, since under Windows they are also installed in a WSL Ubuntu instance. For the setup of these components check the instructions under [Manual Installation (without Tarball)](#manual-installation-without-tarball).
+For an installation under Ubuntu (we tested with 20.04, 22.04 did not work for us) you will have to install Unreal Engine 4 and AirSim in your Ubuntu machine instead of Windows. The setup for the other components (PX4, UPF4ROS2, etc.) remains generally the same, since under Windows they are also installed in a WSL Ubuntu instance. One difference will be the IP-address setup, as everything will be running under `127.0.0.1`. For the setup of these components check the instructions under [Manual Installation (without Tarball)](#manual-installation-without-tarball).
 
 For installation instructions of Unreal Engine 4 under Linux see: https://docs.unrealengine.com/4.27/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/
 
