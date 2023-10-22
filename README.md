@@ -231,7 +231,7 @@ cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2_demo traverse_area
 
 ### Setup of the Ground Control Software
 
-Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. When installed from the tarball it should be located in the directory `~/PX4-Autopilot/`. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal Simulation and PX4 are already running, it should automatically connect.
+Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. When installed from the tarball it should be located in the directory `~/PX4-Autopilot/`. You can start QGroundControl by executing the command `./QGroundControl.AppImage` (from the same directory it is located in). When the Unreal Simulation and PX4 are already running, it should automatically connect.
 
 ### Setup of the Environment Manipulation
 If you don't want to modify the simulation environment manually within the unreal editor, you can externally control the simulation environment (i.e. spawn new objects, change weather conditions, etc.) using the **Remote Control API** for the Unreal Engine and the **AirSim API**.
