@@ -229,6 +229,10 @@ cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py
 cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2_demo traverse_areas.launch.py
 ```
 
+### Setup of the Ground Control Software
+
+Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. When installed from the tarball it should be located in the directory `~/PX4-Autopilot/`. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal Simulation and PX4 are already running, it should automatically connect.
+
 ### Setup of the Environment Manipulation
 If you don't want to modify the simulation environment manually within the unreal editor, you can externally control the simulation environment (i.e. spawn new objects, change weather conditions, etc.) using the **Remote Control API** for the Unreal Engine and the **AirSim API**.
 
@@ -243,10 +247,6 @@ needs to be changed to:
 ```
 
 For setup information of the AirSim API see: https://microsoft.github.io/AirSim/apis/. This API allows you to impact the physics simulation (e.g. simulate wind or rain). An example python script ("remoteControlWeather.py") that has to run from within Windows is provided in this repo.
-
-### Setup of the Ground Control Software
-
-Follow the instructions (for Ubuntu Linux) under: https://docs.qgroundcontrol.com/master/en/getting_started/download_and_install.html to install QGroundControl under WSL2. When installed from the tarball it should be located in the directory `~/PX4-Autopilot/`. You can start QGroundControl by executing the command `./QGroundControl.AppImage`. When the Unreal Simulation and PX4 are already running, it should automatically connect.
 
 ## Ubuntu Installation
 
