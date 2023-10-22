@@ -230,7 +230,7 @@ cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2_demo traverse_area
 ```
 
 ### Setup of the Environment Manipulation
-You can externally control the simulation environment (i.e. spawn new objects, change weather conditions, etc.) using the **Remote Control API** for the Unreal Engine and the **AirSim API**.
+If you don't want to modify the simulation environment manually within the unreal editor, you can externally control the simulation environment (i.e. spawn new objects, change weather conditions, etc.) using the **Remote Control API** for the Unreal Engine and the **AirSim API**.
 
 To install the Remote Control API, follow the instructions under: https://docs.unrealengine.com/4.27/en-US/ProductionPipelines/ScriptingAndAutomation/WebControl/QuickStart/. This plugin allows you to call any public functions of objects in the Unreal Engine project via HTTP requests. For convenient testing of HTTP requests, you can use the Postman software (https://www.postman.com/). The object paths are changed while the editor is in "simulation mode" (i.e. you press the play button). Be sure to add the prefix "UEDPIE_0_" to the object path parameter. Otherwise, the functions will only work in "edit mode" (see: https://forums.unrealengine.com/t/does-web-remote-control-work-during-runtime/463743).
 
