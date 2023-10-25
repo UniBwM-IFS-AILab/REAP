@@ -215,6 +215,7 @@ We use ROS2 msg types that are specifically tailored to drones from the [Aerosta
 - `sudo apt install libgflags-dev`
 - `sudo apt install ignition-fortress`
 
+Related to Aerostack2 are also some work-in-progress repositories, including one for [pixhawk](https://github.com/aerostack2/as2_platform_pixhawk/blob/main/src/pixhawk_platform.cpp). It might be worth a look if you are seeking low-level hardware control of UAVs instead of high level functions.
 * * *
 To finally test the complete REAP setup, replace the file `CMakeLists.txt` in the directory `~/offboard_control_ws/src/px4_ros_com/` with the modified version of this repo as well.
 Rebuild offboard_control (**Action Server**) via the command `cd ~/offboard_control_ws/src/px4_ros_com/scripts; source build_ros2_workspace.bash`.
