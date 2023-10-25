@@ -178,7 +178,7 @@ source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.
 * * *
 
 #### Setting up the Action Server
-The **Action Server** is based on the ["ROS2 Example Applications"](https://docs.px4.io/main/en/ros/ros2_comm.html#ros-2-example-applications) in the official PX4 documentation. If you want to read additional PX4 states, such as battery charge or gps home position, you first have to enable relevant message types by editing the file `dds_topic.yaml` in the PX4-Autopilot as described [here](https://docs.px4.io/main/en/middleware/uxrce_dds.html#dds-topics-yaml). Just append the following lines to the publication section of the `dds_topic.yaml` file within the directory `~/PX4-Autopilot/src/modules/uxrce_dds_client`:
+The **Action Server** is based on the ["ROS2 Example Applications"](https://docs.px4.io/main/en/ros/ros2_comm.html#ros-2-example-applications) in the official PX4 documentation. If you want to read out additional PX4 states, such as battery charge or gps home position, you first have to enable relevant message types by editing the file `dds_topic.yaml` in the PX4-Autopilot as described [here](https://docs.px4.io/main/en/middleware/uxrce_dds.html#dds-topics-yaml). Just append the following lines to the publication section of the `dds_topic.yaml` file within the directory `~/PX4-Autopilot/src/modules/uxrce_dds_client`:
 
 ```
   - topic: /fmu/out/battery_status
@@ -202,7 +202,8 @@ Next, copy the following files from within the `Offboard_Control` folder of this
 - `GeodeticConverter.hpp`
 - replace the original `offboard_control.cpp` with the one from this repo.
 
-Also add the launch file `offboard_control.launch.py` to the directory `~/offboard_control_ws/src/px4_ros_com/launch/`.
+Finally add the launch file `offboard_control.launch.py` to the directory `~/offboard_control_ws/src/px4_ros_com/launch/`.
+If you want to modify the **Action Server** component in the future, look at the paragraph about "offboard_control.cpp" in [this](https://github.com/UniBwM-IFS-AILab/REAP#important-configuration-and-codefiles) section of the readme.
 
 * * *
 
