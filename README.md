@@ -203,6 +203,7 @@ Next, copy the following files from within the `Offboard_Control` folder of this
 - replace the original `offboard_control.cpp` with the one from this repo.
 
 Finally add the launch file `offboard_control.launch.py` to the directory `~/offboard_control_ws/src/px4_ros_com/launch/`.
+
 If you want to modify the **Action Server** component in the future, look at the paragraph about "offboard_control.cpp" in [this](https://github.com/UniBwM-IFS-AILab/REAP#important-configuration-and-codefiles) section of the readme.
 
 * * *
