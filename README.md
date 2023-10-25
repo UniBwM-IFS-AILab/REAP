@@ -281,6 +281,14 @@ Other functionalities which trigger replanning (e.g. removing a goal, adding a c
 
 In this section relevant files are described, that are required to customize the simulation environment to your needs.
 
+>**⚠ Info** 
+> For debugging purposes as well as adding new functionalities it is important to understand the basics of ROS2 topic names and in general how ROS2 communication works. If you are unsure about it, here you can find the documentation:
+> - [Understanding nodes](https://docs.ros.org/en/rolling/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html)
+> - ROS2 [Interfaces](https://docs.ros.org/en/rolling/Concepts/Basic/About-Interfaces.html)
+> - [Topics vs Services vs Actions](https://docs.ros.org/en/rolling/How-To-Guides/Topics-Services-Actions.html)
+>
+> In the REAP framework we are using a custom `name_prefix` that we prepend in front of each topic, service or action namespace to differentiate between different drones as message receivers. We use zero-indexing, so the name_prefix for the first drone is "vhcl0_", for the second drone is "vhcl1_" and so on. We use this even if there is just a single drone in the simulation.
+
  - **C:\Users\%USERNAME%\Documents\AirSim\settings.json** within Windows : This file contains configurations for the AirSim plugin within Unreal Engine, sets parameters for the (px4) flight control software and manages the number of simulated drone objects within the simulation. Keep in mind that the number of simulated drones not necessarily has to be the same as the number of drones controlled by the REAP framework. So if you configure 3 drones in the AirSim settings.json file, but start the "start_upf_simulation.sh" shellscript that controls just a single drone, then only a single drone will take off.
  - **\<PlanSys2\>/src/UPF4ROS2/upf4ros2/upf4ros2/upf4ros2_main.py**: This file represents  the UPF4ROS2 plugin of the **Planner** component. It wraps relevant functions of the unified planning framework within a ROS2 node and makes them available as ROS2 actions and services. If you want to directly create a pddl problem definition in python code without using pddl files, here is the right place to make your modifications.
  - **\<PlanSys2\>/src/UPF4ROS2/upf4ros2_demo/upf4ros2_demo/plan_executor.py**: This file communicates with the **Planner** component in the system diagram. The PDDL problem/domain file can be given in the **init** function. However, it is also possible to directly define a planning problem via Python command using the Unified Planning Framework. A plan is calculated in the **get_plan_srv** function. Then, we loop through all the actions. An action is sent to the **Action Client** via ROS2 client-server architecture. When the Action Client responds that the action has been finished, the next action is sent until the plan is fully executed.
