@@ -73,7 +73,7 @@ Furthermore, AirSim requires a settings file to operate (should be located under
 We recommend creating a custom unreal environment for importing LIDAR files. The general required steps are detailed here: https://microsoft.github.io/AirSim/unreal_custenv/. However instead of using a marketplace project, you should create a new & empty project from scratch and follow the steps as if it were a marketplace project.
 
 Instructions on how to import LIDAR files into UE4 can be found here: https://docs.unrealengine.com/4.26/en-US/WorkingWithContent/LidarPointCloudPlugin/LidarPointCloudPluginQuickstartGuide/.
-Sample data can be downloaded from here (choose LAS): https://www.ldbv.bayern.de/service/testdaten.html -> DOM40 (with color).
+Sample data can be downloaded from here (choose LAS): https://www.ldbv.bayern.de/service/testdaten.html -> DOM40 (with color). After importing a point cloud, make sure that you built the collision (see also this [link](https://forums.unrealengine.com/t/point-cloud-plugin/106645/456)). You can view the collision mesh by clicking on "Show" in the unreal viewport and then checking the box called "collision". If you notice significant gaps in your point cloud data, you might want to **increase** the "Max Collision Error" in order for the gaps to be included in the collision mesh as well.
 
 Make sure the `"OriginGeopoint"` field of settings.json corresponds to the real GPS coordinates of the `Player Start` Object within the imported LIDAR environment and rotate the point cloud in such a way that north aligns with the x-Axis within Unreal Engine. Google Maps can be helpful in making sure the GPS coordinates of the simulated Environment correspond to the real world.
 
