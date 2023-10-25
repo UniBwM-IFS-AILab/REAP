@@ -5,7 +5,7 @@
 
 This repository contains installation information for the REAP framework as described in the [ICAPS 2023 Demo paper](https://icaps23.icaps-conference.org/program/demos/#3216).<br />
 A demo video provides an overview of the framework: https://www.youtube.com/watch?v=QtMjnMD5zzE.
-The REAP-framework also makes use of a forked [UPF4ROS2](https://github.com/UniBwM-IFS-AILab/UPF4ROS2) repository.
+REAP also makes use of a forked [UPF4ROS2](https://github.com/UniBwM-IFS-AILab/UPF4ROS2) repository.
 
 To cite **REAP**, please use the following reference: <br />
 Oliver Kraus, Lucas Mair, Jane Jean Kiam. "REAP: A Flexible Real-World Simulation Framework for AI-Planning of UAVs". In: ICAPS 2023 System Demonstrations.<br />
