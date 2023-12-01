@@ -1,3 +1,26 @@
+# source for self-elevating admin rights https://serverfault.com/questions/11879/gaining-administrator-privileges-in-powershell/12306#12306
+#at top of script
+if (!
+    #current role
+    (New-Object Security.Principal.WindowsPrincipal(
+        [Security.Principal.WindowsIdentity]::GetCurrent()
+    #is admin?
+    )).IsInRole(
+        [Security.Principal.WindowsBuiltInRole]::Administrator
+    )
+) {
+    #elevate script and exit current non-elevated runtime
+    Start-Process `
+        -FilePath 'powershell' `
+        -ArgumentList (
+            #flatten to single array
+            '-File', $MyInvocation.MyCommand.Source, $args `
+            | %{ $_ }
+        ) `
+        -Verb RunAs
+    exit
+}
+
 # normal echo won't work
 # echo "setting static vEthernet (WSL) ip address..."
 
