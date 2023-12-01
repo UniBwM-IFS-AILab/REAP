@@ -101,7 +101,7 @@ The preconfigured WSL2 instance from the tarball makes use of aliases that can b
 ### Allow Incoming Connections in Windows
 Incoming TCP port 4560 and incoming UDP port 14540 are required for connecting PX4 running in WSL to the unreal simulation. The ports can be opened using the firewall configuration (run WF.msc -> left click inbound rules -> action: new rule).
 
-As the IP address of `ipconfig` -> "Ethernet adapter vEthernet (WSL)" might change after restarting the Windows machine, it can be useful to set up a static address via a powershell script - provided in this repository as `wsl_static_ip.ps1` - that gets executed on WSL startup. Make sure that powershell script execution is [enabled](https://superuser.com/questions/106360/how-to-enable-execution-of-powershell-scripts) on your system. For this to work, the **Windows Terminal** from which the WSL instance is started needs to be run **as admin**.
+As the IP address of `ipconfig` -> "Ethernet adapter vEthernet (WSL)" might change after restarting the Windows machine, it can be useful to set up a static address via a powershell script - provided in this repository as `wsl_static_ip.ps1` - that gets executed on WSL startup.
 In addition the following lines have to be added to /etc/wsl.conf within the WSL Ubuntu instance. Dont forget to adjust the path with your own location of the powershell script.
 ```
 [boot]
