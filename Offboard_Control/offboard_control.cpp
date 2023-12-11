@@ -103,11 +103,11 @@ constexpr unsigned int str2int(const char* str, int h = 0){
 class OffboardControl : public rclcpp::Node {
 public:
 	
-	std::shared_ptr<BatteryStatusListener> battery_listener_;
+	std::shared_ptr<VehicleStatusListener> battery_listener_;
 	std::shared_ptr<VehicleGlobalPositionListener> gps_listener_;
 
 	// name_prefix should have the format "<identifier>/"
-	OffboardControl(std::shared_ptr<BatteryStatusListener> battery_listener, std::shared_ptr<VehicleGlobalPositionListener> gps_listener, std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "offboard_control") {
+	OffboardControl(std::shared_ptr<VehicleStatusListener> battery_listener, std::shared_ptr<VehicleGlobalPositionListener> gps_listener, std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "offboard_control") {
 		
 		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(name_prefix + "fmu/in/offboard_control_mode", 10);
 		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/in/trajectory_setpoint", 10);
@@ -729,7 +729,7 @@ int main(int argc, char* argv[]) {
 		name_prefix = argv[1];
 	}
 	
-	auto battery_listener = std::make_shared<BatteryStatusListener>(name_prefix);
+	auto battery_listener = std::make_shared<VehicleStatusListener>(name_prefix);
 	auto gps_listener = std::make_shared<VehicleGlobalPositionListener>(name_prefix);
 	
 	//spin listener first for a short time so initial status messages arrive
