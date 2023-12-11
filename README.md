@@ -198,7 +198,7 @@ Afterwards you have to make a clean rebuild of PX4-Autopilot. You might also wan
 
 At this point the additional topic type `BatteryStatus publisher` should show up after starting the MicroXRCEAgent (which corresponds to the "ROS2 Bridge" module in the system diagram).
 Next, copy the following files from within the `Offboard_Control` folder of this repo to `~/offboard_control_ws/src/px4_ros_com/src/examples/offboard/`:
-- `battery_status_listener_lib.cpp`
+- `vehicle_status_listener_lib.cpp`
 - `vehicle_global_position_listener_lib.cpp`
 - `GeodeticConverter.hpp`
 - replace the original `offboard_control.cpp` with the one from this repo.
