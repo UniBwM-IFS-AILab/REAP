@@ -299,7 +299,7 @@ In this section relevant files are described, that are required to customize the
 - PDDL problem and domain files are stored in **\<PlanSys2\>/src/UPF4ROS2/upf4ros2_demo/pddl** and parsed within plan_executor.py.
 
 ## Roadmap
-- Add section to this documentation for adding new actions or functionality
+- A readme section about adding new actions or functionality to REAP
 - Providing an interface for [ALNS](https://github.com/N-Wouda/ALNS).
 - Upgrading to Unreal Engine 5 via the [Colosseum](https://github.com/CodexLabsLLC/Colosseum) fork of AirSim.
 - A readme section about integrating photogrammetry models or environment streaming via Cesium plugin/Google Maps.
