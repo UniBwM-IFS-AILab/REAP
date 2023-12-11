@@ -33,7 +33,7 @@ alias start_plan_multi='cd ~/PlanSys; source install/setup.bash; sleep 6; ros2 l
 alias build_colcon='colcon build --symlink-install'
 
 # build command for Aerostack2
-alias rebuild_aero='~/aerostack2_ws; colcon build --symlink-install --packages-skip as2_ign_gazebo_assets as2_platform_ign_gazebo'
+alias rebuild_aero='cd ~/aerostack2_ws; colcon build --symlink-install --packages-skip as2_ign_gazebo_assets as2_platform_ign_gazebo'
 
 # commands for high level task manager and stochastic game
 alias start_game_solve="cd ~/PlanSys; ros2 launch upf4ros2_demo roswrap.launch.py"
