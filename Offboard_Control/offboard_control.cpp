@@ -47,7 +47,7 @@
 // location of this file is at ~/offboard_control_ws/src/px4_ros_com/src/examples/offboard/offboard_control.cpp
  
 // including aerostack2 msgs from other workspace (works after calling the relevant <workspace/install>/setup.bash)
-#include "as2_msgs/action/take_off.hpp"
+#include "as2_msgs/action/takeoff.hpp"
 #include "as2_msgs/action/land.hpp"
 #include "as2_msgs/srv/get_origin.hpp"
 #include "as2_msgs/srv/set_origin.hpp"
@@ -86,7 +86,7 @@ using namespace std::chrono_literals;
 using namespace px4_msgs::msg;
 
 //aerostack2 aliases
-using TakeOff = as2_msgs::action::TakeOff;
+using TakeOff = as2_msgs::action::Takeoff;
 using Land = as2_msgs::action::Land;
 
 using PoseStamped = geometry_msgs::msg::PoseStamped;
