@@ -103,11 +103,11 @@ constexpr unsigned int str2int(const char* str, int h = 0){
 class OffboardControl : public rclcpp::Node {
 public:
 	
-	std::shared_ptr<VehicleStatusListener> battery_listener_;
+	std::shared_ptr<VehicleStatusListener> vehicle_status_listener_;
 	std::shared_ptr<VehicleGlobalPositionListener> gps_listener_;
 
 	// name_prefix should have the format "<identifier>/"
-	OffboardControl(std::shared_ptr<VehicleStatusListener> battery_listener, std::shared_ptr<VehicleGlobalPositionListener> gps_listener, std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "offboard_control") {
+	OffboardControl(std::shared_ptr<VehicleStatusListener> vehicle_status_listener, std::shared_ptr<VehicleGlobalPositionListener> gps_listener, std::string name_prefix = "") : Node(name_prefix.substr(0, name_prefix.size() - 1)+ "_" + "offboard_control") {
 		
 		offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(name_prefix + "fmu/in/offboard_control_mode", 10);
 		trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(name_prefix + "fmu/in/trajectory_setpoint", 10);
@@ -116,7 +116,7 @@ public:
 		name_prefix_ = name_prefix;
 		
 		// get content from listeners
-		battery_listener_ = battery_listener;
+		vehicle_status_listener_ = vehicle_status_listener;
 		gps_listener_ = gps_listener;
 		
 		// set home gps origin for reference
@@ -413,17 +413,29 @@ private:
 		publish_offboard_control_mode();
 		if(!is_flying_){
 			//https://discuss.px4.io/t/where-to-find-custom-mode-list-for-mav-cmd-do-set-mode/32756/4
-			this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
-			this->arm();
 			
-			if (goal_handle->is_canceling()) {
-				this->disarm();
-				if(final_action){
-					goal_handle->canceled(result);
+			int retry_count = 0;
+			for( ; retry_count < 3; ++retry_count){
+				this->publish_vehicle_command(VehicleCommand::VEHICLE_CMD_DO_SET_MODE, 1, 6);
+				this->arm();
+				
+				if (goal_handle->is_canceling()) {
+					this->disarm();
+					if(final_action){
+						goal_handle->canceled(result);
+					}
+					RCLCPP_INFO(this->get_logger(), "Takeoff canceled");
+					return OffboardControl::RETURN_VALUE::goal_canceled;
 				}
-				RCLCPP_INFO(this->get_logger(), "Takeoff canceled");
-				return OffboardControl::RETURN_VALUE::goal_canceled;
+				
+				loop_rate.sleep();
+				if (vehicle_status_listener_->recent_status_msg->arming_state == 2) break;
 			}
+			if (retry_count >= 3){
+				RCLCPP_INFO(this->get_logger(), "Takeoff aborted: [could not arm]");
+				goal_handle->abort(result);
+			}
+			
 			this->takeoff();
 		}
 		
@@ -729,7 +741,7 @@ int main(int argc, char* argv[]) {
 		name_prefix = argv[1];
 	}
 	
-	auto battery_listener = std::make_shared<VehicleStatusListener>(name_prefix);
+	auto status_listener = std::make_shared<VehicleStatusListener>(name_prefix);
 	auto gps_listener = std::make_shared<VehicleGlobalPositionListener>(name_prefix);
 	
 	//spin listener first for a short time so initial status messages arrive
@@ -739,13 +751,13 @@ int main(int argc, char* argv[]) {
 	//without timeout:
 	rclcpp::spin_until_future_complete(gps_listener, gps_listener -> get_next_gps_future());
 	
-	auto controller = std::make_shared<OffboardControl>(battery_listener, gps_listener, name_prefix);
+	auto controller = std::make_shared<OffboardControl>(status_listener, gps_listener, name_prefix);
 	controller -> start_action_server();
 	controller -> start_services();
 	
 	rclcpp::executors::SingleThreadedExecutor executor;
 
-	executor.add_node(battery_listener);
+	executor.add_node(status_listener);
 	executor.add_node(gps_listener);
 	executor.add_node(controller);
 	executor.spin();
