@@ -150,7 +150,7 @@ Definition Language (PDDL). Thus, a flight mission can be automatically generate
 ### Setup of the Validation and Visualization Component
 The first module that will be installed is the flight control software PX4 and the ROS2 Bridge. General installation instructions can be found here: https://docs.px4.io/main/en/dev_setup/building_px4.html. At the time of this writing the main branch of PX4 corresponds to version 1.14. If the installation instructions differ based on the ROS2 version, use the ones for ROS2 Galactic. For testing successful installations use the command `make px4_sitl none_iris` from within the PX4-Autopilot directory.
 
-Next you need to install the [PX4-ROS 2/DDS Bridge](https://docs.px4.io/main/en/middleware/uxrce_dds.html#install-standalone-from-source) in order to control the drones in the simulation via ROS2 Nodes.
+Next you need to install the [PX4-ROS 2/DDS Bridge](https://docs.px4.io/main/en/middleware/uxrce_dds.html#install-standalone-from-source) in order to control the drones in the simulation via ROS2 Nodes. Due to cmake version requirements, you have to install the ros2 branch (`git clone -b ros2 https://github.com/eProsima/Micro-XRCE-DDS-Agent.git`).
 
 **_NOTE:_**  The MicroXRCEAgent will only connect to PX4 if it is already connected to the Unreal simulation.
 
