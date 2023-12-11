@@ -65,7 +65,7 @@
 // Nodes for listening to px4 messages
 // separate header files would be better style, but it should work just fine with including cpp files
 #include "vehicle_global_position_listener_lib.cpp"
-#include "battery_status_listener_lib.cpp"
+#include "vehicle_status_listener_lib.cpp"
 
 
 #include <px4_msgs/msg/offboard_control_mode.hpp>
