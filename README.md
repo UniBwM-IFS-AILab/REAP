@@ -227,11 +227,11 @@ cd ~/PX4-Autopilot; make px4_sitl_default none_iris
 
 cd Micro-XRCE-DDS-Agent/build; MicroXRCEAgent udp4 -p 8888
 
-source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.bash; ros2 run px4_ros_com offboard_control
+source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.bash; ros2 launch px4_ros_com offboard_control.launch.py count:=1
 
 cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2 upf4ros2.launch.py
 
-cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2_demo traverse_areas.launch.py
+cd ~/PlanSys; source install/setup.bash; ros2 launch upf4ros2_demo traverse_areas.launch.py count:=1
 ```
 
 ### Setup of the Ground Control Software
