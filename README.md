@@ -173,7 +173,7 @@ source /opt/ros/galactic/setup.bash; source ~/offboard_control_ws/install/setup.
  - The PX4 "error: etc/init.d-posix/rcS: 39: [: Illegal number:" so far didn't cause problems for the REAP framework. You can probably ignore it.
  - `apt install --user -U kconfiglib empy pyros-genmsg setuptools`
  - Using Java JDK version 11 (`sudo update-alternatives --config java`) might help, install version 11 if not available as choice.
- - For PX4 to connect to the AirSim simulation you need to set an environment variable with the WSL2 IP address, e.g. in the aliases.sh file. (`PX4_SIM_HOST_ADDR=172.17.208.1`)
+ - For PX4 to connect to the AirSim simulation you need to set an environment variable with the WSL2 IP address, e.g. in the aliases.sh file. (`export PX4_SIM_HOST_ADDR=172.17.208.1`)
  - We provide our aliases.sh file which might help. If you want to use it, copy its content into /etc/profile.d/aliases.sh. Normally shell scripts in that directory should be automatically sourced (from the /etc/profile executable).
 
 * * *
