@@ -105,7 +105,7 @@ As the IP address of `ipconfig` -> "Ethernet adapter vEthernet (WSL (Hyper-V fir
 In addition the following lines have to be added to /etc/wsl.conf within the WSL Ubuntu instance. Dont forget to adjust the path with your own location of the powershell script.
 ```
 [boot]
-command="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -executionpolicy bypass 'C:/<path-to-script>/wsl_static_ip.ps1'"
+command="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -WindowStyle Hidden -executionpolicy bypass 'C:/<path-to-script>/wsl_static_ip.ps1'"
 ```
 To test if the powershell script works, execute `wsl --shutdown`, wait a few seconds, then restart the WSL instance. `ipconfig` should now show a second ip address for "vEthernet (WSL)". Sometimes you also have to open a new terminal tab before running `ipconfig` as it might have cached the previous results.
 
