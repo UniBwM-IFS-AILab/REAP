@@ -1,3 +1,4 @@
+# only elevate to admin rights, if preset ip address is not already set. Otherwise just exit the script
 $presetIpAddress = "172.17.208.1"
 
 $adapterInfo = netsh interface ip show address "vEthernet (WSL (Hyper-V firewall))" | findstr "IP Address"
