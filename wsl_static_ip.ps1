@@ -1,5 +1,6 @@
 # only elevate to admin rights, if preset ip address is not already set. Otherwise just exit the script
 $presetIpAddress = "172.17.208.1"
+$scriptPath = $PSScriptRoot + "\wsl_static_ip.ps1"
 
 $adapterInfo = netsh interface ip show address "vEthernet (WSL (Hyper-V firewall))" | findstr "IP Address"
 $adapterInfoOld = netsh interface ip show address "vEthernet (WSL)" | findstr "IP Address"
@@ -39,14 +40,7 @@ if (!
     )
 ) {
     #elevate script and exit current non-elevated runtime
-    Start-Process `
-        -FilePath 'powershell' `
-        -ArgumentList (
-            #flatten to single array
-            '-File', $MyInvocation.MyCommand.Source, $args `
-            | %{ $_ }
-        ) `
-        -Verb RunAs
+    Start-Process -FilePath 'powershell' -ArgumentList "-ExecutionPolicy Bypass -File $scriptPath" -Verb RunAs
     exit
 }
 
