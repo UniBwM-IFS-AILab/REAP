@@ -174,6 +174,8 @@ The **Action Server** is based on the ["ROS2 Example Applications"](https://docs
     type: px4_msgs::msg::BatteryStatus
   - topic: /fmu/out/home_position
     type: px4_msgs::msg::HomePosition
+  - topic: /fmu/out/vehicle_command
+    type: px4_msgs::msg::VehicleCommand
 ```
 
 Afterwards you have to make a clean rebuild of PX4-Autopilot. You might also want to add the line `source ~/offboard_control_ws/install/setup.bash` to your aliases.sh or .bashrc file, to automatically load the offboard_control_ws workspace every time you start a new terminal tab within the WSL2 instance.
