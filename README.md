@@ -48,7 +48,7 @@ Below you can find an overview of the system architecture. The provided tarball 
 
 ## System requirements
 We tested REAP using the following development environment:
-  - Windows 11
+  - Windows 10 (Windows 11 occasionally causes AirSim crashes during simulation)
   - WSL2 instance (Ubuntu 20.04) (Installation instructions here: https://learn.microsoft.com/en-us/windows/wsl/install)
   - ROS2 galactic installed on the same WSL2 Ubuntu instance (Installation instructions here: https://docs.ros.org/en/galactic/Installation/Ubuntu-Install-Debians.html)
 
