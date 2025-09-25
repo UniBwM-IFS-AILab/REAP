@@ -298,4 +298,4 @@ In this section relevant files are described, that are required to customize the
 
 ## Contact Information
 
-Write us for questions, help for installation, or even future collaboration at fmff.lrt@unibw.de
+Write us for questions, help for setuo, or even future collaboration at fmff.lrt@unibw.de
