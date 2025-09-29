@@ -1,4 +1,4 @@
-# REAP-Framework
+# REAP
 
 ![image](https://user-images.githubusercontent.com/92592126/235185659-75937f07-1976-4b61-9ffa-43ad95e4c472.png)
 
@@ -129,7 +129,7 @@ The AI-Planning component within the REAP-framework translates symbolic actions 
 Clone  UPF4ROS2 from: https://github.com/UniBwM-IFS-AILab/UPF4ROS2 into `REAP-PF/src/` and follow the installation instructions given in the README.md.
 
 Lastly, we describe the integration of **shapefiles** into the planning component. Shapefiles contain geo-referenced polygons which can be used to describe geographic features of an area. In our case, we used shapefiles that describe the land use of an area (e.g. "forest", "lake", "farmland", etc.). These shapefiles can be automatically processed to generate planning problems using the Planning Domain
-Definition Language (PDDL). Thus, a flight mission can be automatically generated (e.g., “Explore all ’woods’ in an area”). For sample data, download "ATKIS® Basis-DLM - Download - Komplettdatensatz SHAPE" from https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm. The preprocessing steps for the shapefile depend, of course, on the file used and the intended use case. For reference, you can take a look at the scripts uploaded in the "**shapefile_preprocessing**" folder in this repository. The **geopandas** library allows preprocessing of geo-referenced data in Python. The general workflow is: 
+Definition Language (PDDL). Thus, a flight mission can be automatically generated (e.g., “Explore all ’woods’ in an area”). For sample data, download "ATKIS® Basis-DLM - Download - Komplettdatensatz SHAPE" from https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=atkis_basis_dlm. The preprocessing steps for the shapefile depend, of course, on the file used and the intended use case. For reference, you can take a look at the scripts uploaded in the "**shapefile_preprocessing**" folder in this repository. The **geopandas** library allows preprocessing of geo-referenced data in Python. The general workflow is:
  - read in shapefile and group the geo-referenced polygons into categories (e.g. "lakes" and "ponds" are grouped into the category "waters"). In our case, we group the polygons into the categories: "urban areas", "waters", "woods", "open areas" and "mountains"
  - the polygons are enveloped into rectangular areas, so it is possible to calculate features like centroid and adjacency matrix. However, this will introduce some error based on the shape and the size of the polygon
  - neighboring areas which belong to the same category are merged together. This was necessary because the original shapefile divides the areas into many small areas.
@@ -235,7 +235,7 @@ To install the Remote Control API, follow the instructions under: https://docs.u
 
 ```
 "objectPath" : "/Game/Maps/SunTemple.SunTemple:PersistentLevel.Bp_SpawnPoint_2"
-``` 
+```
 needs to be changed to:
 ```
 "objectPath" : "/Game/Maps/UEDPIE_0_SunTemple.SunTemple:PersistentLevel.Bp_SpawnPoint_2"
@@ -272,7 +272,7 @@ Other functionalities which trigger replanning (e.g. removing a goal, adding a c
 
 In this section relevant files are described, that are required to customize the simulation environment to your needs.
 
->**⚠ Info** 
+>**⚠ Info**
 > For debugging purposes as well as adding new functionalities, it is important to understand the basics of ROS2 topic names and in general how ROS2 communication works. If you are unsure about it, here you can find the documentation:
 > - [Understanding nodes](https://docs.ros.org/en/rolling/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html)
 > - ROS2 [Interfaces](https://docs.ros.org/en/rolling/Concepts/Basic/About-Interfaces.html)
@@ -298,4 +298,4 @@ In this section relevant files are described, that are required to customize the
 
 ## Contact Information
 
-Write us for questions, help for setuo, or even future collaboration at fmff.lrt@unibw.de
+Write us for questions, help for installation, or even future collaboration at fmff.lrt@unibw.de
