@@ -18,50 +18,49 @@ Kai Sommer, Björn Döschl, Jane Jean Kiam. "Dynamic REAP: Bringing Life into Si
 }
 ```
 
-## System requirements
+## System Requirements
 We tested Dyanmic REAP using the following environment:
   - Windows 11
   - Unreal Engine 5.2.1
   - WSL2 instance with Ubuntu 22.04
 
-## Setup of the simulation environment
+## Setup of the Simulation Environment
 
 ![System Overview of Dynamic REAP](media/sys_overview.png)
 The system overview shows the components required to run the simulation environment:
-1. **Unreal Level**
-2. **Unreal Blueprints**
-* for autonomous NPC movement
-* for events happening to NPCs: e.g. injury or loss of orientation
-* Third-Person mode
-* for georeferencing of objects
 
-3. **Scripts**
-* for sending mission data to the planning framework
-* to export Unreal Engine object GPS positions and metadata to JSON
+### Setup Overview
+#### On Windows 11 side: **Unreal Engine 5.2.1**
+  - **AirSim** plugin for Unreal: AirSim is not longer maintained. We are using the Coloseum fork: [Coloseum](https://github.com/CodexLabsLLC/Colosseum)
+  - **Unreal Level** (including the landscape)
+  - **Unreal Blueprints**
+    - for autonomous NPC movement (NPC)
+    - for events happening to NPCs: e.g. injury or loss of orientation (EventBox)
+    - Third-Person mode (inside NPC)
+    - for georeferencing of objects (Object or GeoSetter)
+  - **Python Scripts**
+    *the python scripts can be executed from Unreal Blueprints using Execute Console Command:* py /path/to/script.py
+    - to send mission data to the planning framework (call_for_help.py and listen_for_help.py)
+    - to export Unreal Engine object GPS positions and metadata to JSON (dump_json.py)
 
-4. **AirSim** plugin for Unreal
-  AirSim is not longer maintained. We are using the Coloseum fork: [Coloseum](https://github.com/CodexLabsLLC/Colosseum)
+#### On Ubuntu 22.04 inside WSL2: **Planning and Execution Framework**:
+  - for the integration of a planning and execution framework see [Integration of a planning and execution framework](#integration-of-a-planning-and-execution-framework)
 
-5. **Planning and Execution Framework**
-
-### Using ready-made Unreal level
+### Option 1: Using ready-made Unreal level
 
 The easiest way for trying out is to use our ready-made Unreal level, which includes all necessary blueprints.
 This Unreal level was designed to test Automated Planning for UAVs in search and rescue scenarios and includes a real-world map of the Tannheimer Tal.
 Unfortunately, this Unreal project is about 60 GB in size, so we cannot upload it to GitHub. If you’re interested, we’d be happy to share the project with you directly via a file-sharing link (e.g. GigaMove).
 
-### Building an own Unreal level
+### Option 2: Building an own Unreal level
 
-If you are interested in building your own Unreal Level, we recommend to start with a height map from here: [Unreal PNG Heightmap](https://manticorp.github.io/unrealheightmap/#latitude/47.5172006978394/longitude/10.6210327148438/zoom/11/outputzoom/13/width/505/height/505)
-The blueprints necessary for NPC movement, georeferencing and further features of Dynamic REAP can be found in this repo.
+If you are interested in building your own Unreal Level, we recommend to start with a height map from here: [Unreal PNG Heightmap](https://manticorp.github.io/unrealheightmap/#latitude/47.5172006978394/longitude/10.6210327148438/zoom/11/outputzoom/13/width/505/height/505).
+After importing the *heightmap.png* with the correct GPS scaling computed by the Unreal Heightmapper tool, the landscape features (like textures, trees, ...) have to be added manually. Then blueprints necessary for NPC movement, georeferencing and further features of Dynamic REAP can be integrated to your project.
 
-## Integration of a planning and execution framework
+### Integration of a planning and execution framework
 
-In principle, you can connect any planning and execution framework to control the UAV in Dynamic REAP.
-The only requirement is an interface to the PX4 SITL flight controller, e.g., via MAVLink.
-As proof-of-concept we connected the AUSPEX framework, which already implements the required interfaces.
-An installation for AUSPEX guide can be found here: [AUSPEX](https://github.com/UniBwM-IFS-AILab/AUSPEX)
-Furthermore, AUSPEX is modular in design and can also be extended with your custom planning algorithms.
+In principle, you can connect any planning and execution framework to control the UAV in Dynamic REAP. The only requirement is an interface to the PX4 SITL flight controller, e.g., via MAVLink. “For the planner to access Unreal’s internal data, a knowledge base for storing JSON-based data is recommended.
+As proof-of-concept we connected the AUSPEX framework, which already implements the required interfaces. An installation for AUSPEX guide can be found here: [AUSPEX](https://github.com/UniBwM-IFS-AILab/AUSPEX). Furthermore, AUSPEX is modular in design and can also be extended with your custom planning algorithms.
 
 ## Contact Information
 
