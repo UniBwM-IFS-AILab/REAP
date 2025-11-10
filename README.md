@@ -55,11 +55,14 @@ Unfortunately, this Unreal project is about 60 GB in size, so we cannot upload i
 ### Option 2: Building an own Unreal level
 
 If you are interested in building your own Unreal Level, we recommend to start with a height map from here: [Unreal PNG Heightmap](https://manticorp.github.io/unrealheightmap/#latitude/47.5172006978394/longitude/10.6210327148438/zoom/11/outputzoom/13/width/505/height/505).
-After importing the *heightmap.png* with the correct GPS scaling computed by the Unreal Heightmapper tool, the landscape features (like textures, trees, ...) have to be added manually. Then blueprints necessary for NPC movement, georeferencing and further features of Dynamic REAP can be integrated to your project.
+- download the *heightmap.png*, create empty Unreal Project and import it the heightmap (Landscape -> Manage -> Import from File)
+- enter the scaling computed by the Unreal Heightmap tool and click on *Import*
+- the landscape features (like textures, trees, ...) have to be added manually.
+- the blueprints necessary for NPC movement, georeferencing and further features of Dynamic REAP can be integrated to your project.
 
 ### Integration of a planning and execution framework
 
-In principle, you can connect any planning and execution framework to control the UAV in Dynamic REAP. The only requirement is an interface to the PX4 SITL flight controller, e.g., via MAVLink. “For the planner to access Unreal’s internal data, a knowledge base for storing JSON-based data is recommended.
+In principle, you can connect any planning and execution framework to control the UAV in Dynamic REAP. The only requirement is an interface to the PX4 SITL flight controller, e.g., via MAVLink. For the planner to access Unreal’s internal data, a knowledge base for storing JSON-based data is recommended.
 As proof-of-concept we connected the AUSPEX framework, which already implements the required interfaces. An installation for AUSPEX guide can be found here: [AUSPEX](https://github.com/UniBwM-IFS-AILab/AUSPEX). Furthermore, AUSPEX is modular in design and can also be extended with your custom planning algorithms.
 
 ## Contact Information
