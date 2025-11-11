@@ -1,0 +1,126 @@
+{
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "ClockType": "SteppableClock",
+  "ClockSpeed": 1.0,
+  "ViewMode": "",
+  "LogMessagesVisible": true,
+  "RpcEnabled": true,
+  "EnableCollisionPassthrogh": false,
+  "OriginGeopoint": {
+    "Latitude": 47.52472,
+    "Longitude": 10.56747,
+    "Altitude": 1611.488
+  },
+  "PawnPaths": {
+      "DefaultQuadrotor": {"PawnBP":"Class'/AirSim/Blueprints/BP_FlyingPawn.BP_FlyingPawn_C'"},
+      "QuadrotorMQ1": {"PawnBP":"Class'/Game/VigilanteContent/Vehicles/West_Tank_M1A1Abrams/BP_West_Tank_M1A1Abrams.BP_West_Tank_M1A1Abrams_C'"}
+    },
+    "CameraDefaults": {
+      "CaptureSettings": [
+        {
+          "ImageType": 0,
+          "Width": 640,
+          "Height": 480,
+          "FOV_Degrees": 60,
+          "AutoExposureSpeed": 100,
+          "AutoExposureBias": 0,
+          "AutoExposureMaxBrightness": 0.64,
+          "AutoExposureMinBrightness": 0.03,
+          "MotionBlurAmount": 0,
+          "TargetGamma": 1.3,
+          "ProjectionMode": "",
+          "OrthoWidth": 5.12,
+          "PublishToRos": 1
+        }
+      ],
+      "NoiseSettings": [
+        {
+          "Enabled": false
+        }
+      ],
+      "Gimbal": {
+        "Stabilization": 0,
+        "Pitch": 0, "Roll": 0, "Yaw": 0
+      },
+
+      "UnrealEngine": {
+        "PixelFormatOverride": [
+          {
+            "ImageType": 0,
+            "PixelFormat": 0
+          }
+        ]
+      }
+    },
+    "SubWindows": [
+        {"WindowID": 0, "CameraName": "front_30", "ImageType": 0, "VehicleName": "Drone1", "Visible": true, "External": false},
+        {"WindowID": 1, "CameraName": "camera_observer", "ImageType": 0, "VehicleName": "Drone1", "Visible": true, "External": false}
+      ],
+    "Vehicles": {
+        "Drone1": {
+            "VehicleType": "PX4Multirotor",
+            "PawnPath": "DefaultQuadrotor",
+            "UseSerial": false,
+            "LockStep": true,
+            "UseTcp": true,
+            "TcpPort": 4560,
+            "ControlPortLocal": 14600,
+            "ControlPortRemote": 14600,
+            "X": -2664.70, "Y": 1660.30, "Z": 41.30,
+            "Roll": 0.0, "Pitch": 0.0,"Yaw":0.0,
+            "Sensors":{
+              "Gps": {
+                  "SensorType": 3,
+                  "Enabled" : true,
+                  "EphTimeConstant": 0.9,
+                  "EpvTimeConstant": 0.9,
+                  "EphInitial": 50,
+                  "EpvInitial": 50,
+                  "EphFinal": 0.1,
+                  "EpvFinal": 0.1,
+                  "EphMin3d": 3,
+                  "EphMin2d": 4,
+                  "UpdateLatency": 0.1,
+                  "UpdateFrequency": 5,
+                  "StartupDelay": 0.2
+              },
+              "Magnetometer": {
+                "SensorType": 4,
+                "Enabled" : true,
+                "NoiseSigma": 0.0001,
+                "ScaleFactor": 0.6,
+                "NoiseBias": 0,
+                "UpdateLatency": 0,
+                "UpdateFrequency": 50,
+                "StartupDelay": 0
+              }
+            },
+          "Parameters": {
+                "COM_RCL_EXCEPT": 4,
+                "NAV_RCL_ACT": 0,
+                "NAV_DLL_ACT": 0,
+                "LPE_LAT": 47.509844510623545,
+                "LPE_LON": 10.61198802626625
+            },
+            "Cameras": {
+                "front_30":{
+                    "X": 0.48,
+                    "Y": 0,
+                    "Z": 0.0,
+                    "Roll": 0.0,
+                    "Pitch": -60.0,
+                    "Yaw": 0.0
+                },
+                "camera_observer":{
+                    "X": -5,
+                    "Y": 0,
+                    "Z": -5,
+                    "Roll": 0.0,
+                    "Pitch": -45.0,
+                    "Yaw": 0.0
+                }
+            }
+        }
+    }
+}

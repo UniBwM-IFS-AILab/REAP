@@ -31,17 +31,18 @@ The system overview shows the components required to run the simulation environm
 
 ### Setup Overview
 #### On Windows 11 side: **Unreal Engine 5.2.1**
-  - **AirSim** plugin for Unreal: AirSim is not longer maintained. We are using the Coloseum fork: [Coloseum](https://github.com/CodexLabsLLC/Colosseum)
+  - **AirSim** plugin for Unreal: AirSim is not longer maintained. We are using the Colosseum fork: [Colosseum](https://github.com/CodexLabsLLC/Colosseum)
+     - preconfigured setting file for AirSim can be found in `configs/settings.json`
   - **Unreal Level** (including the landscape)
   - **Unreal Blueprints**
-    - for autonomous NPC movement (NPC)
-    - for events happening to NPCs: e.g. injury or loss of orientation (EventBox)
-    - Third-Person mode (inside NPC)
-    - for georeferencing of objects (Object or GeoSetter)
+    - for autonomous NPC movement (`NPC.T3D`)
+    - for events happening to NPCs: e.g. injury or loss of orientation (`EventBox.T3D`)
+    - Third-Person mode (`NPC.T3D`)
+    - for georeferencing of objects (`Object.T3D` or `GeoSetter.T3D`)
   - **Python Scripts**
-    *the python scripts can be executed from Unreal Blueprints using Execute Console Command:* py /path/to/script.py
-    - to send mission data to the planning framework (call_for_help.py and listen_for_help.py)
-    - to export Unreal Engine object GPS positions and metadata to JSON (dump_json.py)
+    *the python scripts can be executed from Unreal Blueprints using Execute Console Command:* `py /path/to/script.py`
+    - to send mission data to the planning framework (`call_for_help.py` and `search_mission_daemon.py`)
+    - to export Unreal Engine object GPS positions and metadata to JSON (`dump_json.py`)
 
 #### On Ubuntu 22.04 inside WSL2: **Planning and Execution Framework**:
   - for the integration of a planning and execution framework see [Integration of a planning and execution framework](#integration-of-a-planning-and-execution-framework)
@@ -55,8 +56,8 @@ Unfortunately, this Unreal project is about 60 GB in size, so we cannot upload i
 ### Option 2: Building an own Unreal level
 
 If you are interested in building your own Unreal Level, we recommend to start with a height map from here: [Unreal PNG Heightmap](https://manticorp.github.io/unrealheightmap/#latitude/47.5172006978394/longitude/10.6210327148438/zoom/11/outputzoom/13/width/505/height/505).
-- download the *heightmap.png*, create empty Unreal Project and import it the heightmap (Landscape -> Manage -> Import from File)
-- enter the scaling computed by the Unreal Heightmap tool and click on *Import*
+- download the `heightmap.png`, create empty Unreal Project and import it the heightmap (`Landscape -> Manage -> Import from File`)
+- enter the scaling computed by the Unreal Heightmap tool and click on `Import`
 - the landscape features (like textures, trees, ...) have to be added manually.
 - the blueprints necessary for NPC movement, georeferencing and further features of Dynamic REAP can be integrated to your project.
 
