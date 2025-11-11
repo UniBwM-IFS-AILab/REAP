@@ -2,8 +2,8 @@
 
 ![image](media/header.png)
 
-This repository contains installation information for the Dynamic REAP framework as described in the [ICAPS 2025 Demo paper](https://icaps25.icaps-conference.org/program/demos/).<br />
-A demo video provides an overview of the framework: https://www.youtube.com/watch?v=mthOS7hksZQ.
+This repository contains installation information for the Dynamic REAP simulation environment as described in the [ICAPS 2025 Demo paper](https://icaps25.icaps-conference.org/program/demos/).<br />
+A demo video provides an overview of the simulation environment: https://www.youtube.com/watch?v=mthOS7hksZQ.
 The legacy version of REAP presented on [ICAPS 2023](https://icaps23.icaps-conference.org/program/demos/#3216) can be found under reap-legacy tag: https://github.com/UniBwM-IFS-AILab/REAP/releases/tag/reap-legacy
 
 To cite **Dynamic REAP**, please use the following reference: <br/>
@@ -51,7 +51,9 @@ The system overview shows the components required to run the simulation environm
 
 The easiest way for trying out is to use our ready-made Unreal level, which includes all necessary blueprints.
 This Unreal level was designed to test Automated Planning for UAVs in search and rescue scenarios and includes a real-world map of the Tannheimer Tal.
-Unfortunately, this Unreal project is about 60 GB in size, so we cannot upload it to GitHub. If you’re interested, we’d be happy to share the project with you directly via a file-sharing link (e.g. GigaMove).
+> **💡**
+> Unfortunately, this Unreal project is about 60 GB in size, so we cannot upload it to GitHub.
+> If you’re interested, we’d be happy to share the project with you directly via a file-sharing link (e.g. GigaMove).
 
 ### Option 2: Building an own Unreal level
 
