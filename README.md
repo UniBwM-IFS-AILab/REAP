@@ -55,7 +55,7 @@ This Unreal level was designed to test Automated Planning for UAVs in search and
 > Unfortunately, this Unreal project is about 60 GB in size, so we cannot upload it to GitHub.
 > If you’re interested, we’d be happy to share the project with you directly via a file-sharing link (e.g. GigaMove).
 
-### Option 2: Building an own Unreal level
+### Option 2: Building your own Unreal level
 
 If you are interested in building your own Unreal Level, we recommend to start with a height map from here: [Unreal PNG Heightmap](https://manticorp.github.io/unrealheightmap/#latitude/47.5172006978394/longitude/10.6210327148438/zoom/11/outputzoom/13/width/505/height/505).
 - download the `heightmap.png`, create empty Unreal Project and import it the heightmap (`Landscape -> Manage -> Import from File`)
